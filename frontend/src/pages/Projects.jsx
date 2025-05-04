@@ -55,6 +55,7 @@ function Projects() {
     useEffect(() => {
         const urls = [
             'https://pharovest.onrender.com/project/getAllProjects',
+            'https://finvest-backend.onrender.com/project/getAllProjects',
             '/projects.json'  // Local fallback
         ];
 

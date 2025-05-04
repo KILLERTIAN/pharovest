@@ -78,8 +78,7 @@ function NewPost() {
         setPosting(true);
 
         const urls = [
-            'https://pharovest.onrender.com/post/new-post',
-            'https://pharovest.onrender.com/post/new-post',
+            'https://pharovest.onrender.com/post/new-post'
         ];
 
         const data = new FormData();

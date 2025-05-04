@@ -46,8 +46,8 @@ function PostsPage() {
 
     useEffect(() => {
         const urls = [
-            'https://finvest-backend.onrender.com/posts',
             'https://pharovest.onrender.com/posts',
+            'https://finvest-backend.onrender.com/posts'
         ];
 
         const userData = localStorage.getItem('user');
@@ -313,11 +313,15 @@ function PostsPage() {
                                                                 className="flex items-start gap-3 mt-3 p-3 rounded-lg bg-[#05140D]/50 hover:bg-[#05140D] transition-colors duration-300"
                                                             >
                                                                 <Avatar className="h-8 w-8">
-                                                                    <AvatarImage src={comment.avatar} alt={comment.name} />
-                                                                    <AvatarFallback className="bg-[#13261F] text-[#2FB574]">{comment.name.charAt(0)}</AvatarFallback>
+                                                                    <AvatarImage src={comment.avatar} alt={typeof comment.name === 'string' ? comment.name : 'User'} />
+                                                                    <AvatarFallback className="bg-[#13261F] text-[#2FB574]">
+                                                                        {typeof comment.name === 'string' ? comment.name.charAt(0) : 'U'}
+                                                                    </AvatarFallback>
                                                                 </Avatar>
                                                                 <div>
-                                                                    <p className="text-sm font-semibold text-white">{comment.name}</p>
+                                                                    <p className="text-sm font-semibold text-white">
+                                                                        {typeof comment.name === 'string' ? comment.name : `User${Math.floor(Math.random() * 1000)}`}
+                                                                    </p>
                                                                     <p className="text-sm text-gray-300 mt-1">{comment.text}</p>
                                                                     <div className="flex items-center gap-3 mt-2">
                                                                         <button className="text-xs text-gray-400 hover:text-[#2FB574] transition-colors">Reply</button>

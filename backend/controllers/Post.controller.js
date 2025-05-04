@@ -87,8 +87,30 @@ export const sharePost = async (req, res) => {
 export const addComment = async (req, res) => {
     try {
         const { avatar, name, text } = req.body;
+        
+        // Generate a random name if one is not provided
+        const randomNames = [
+            "Alex Johnson", "Sam Smith", "Jordan Lee", "Taylor Brown", 
+            "Casey Wilson", "Morgan Davis", "Riley Moore", "Jamie Garcia", 
+            "Drew Martinez", "Avery Robinson", "Quinn Thompson", "Reese Thomas"
+        ];
+        
+        const commentName = name || randomNames[Math.floor(Math.random() * randomNames.length)];
+        const commentAvatar = avatar || `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 99)}.jpg`;
+        
+        // Find the last comment to determine the next ID
         const post = await Post.findById(req.params.postId);
-        post.comments.push({ avatar, name, text });
+        const lastComment = post.comments.length > 0 ? post.comments[post.comments.length - 1] : null;
+        const nextId = lastComment ? parseInt(lastComment.id) + 1 : 1;
+        
+        post.comments.push({ 
+            id: nextId.toString(),
+            avatar: commentAvatar, 
+            name: commentName, 
+            text,
+            createdAt: new Date().toISOString()
+        });
+        
         await post.save();
         res.status(201).json(post);
     } catch (error) {
