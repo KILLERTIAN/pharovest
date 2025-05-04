@@ -1,0 +1,22 @@
+{
+  "name": "pharovest-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for Pharovest blockchain crowdfunding platform",
+  "main": "index.js",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blockchain",
+    "crowdfunding",
+    "pharos",
+    "ethereum",
+    "solidity"
+  ],
+  "author": "",
+  "license": "MIT"
+} 

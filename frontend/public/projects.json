@@ -1,0 +1,68 @@
+[
+    {
+        "id": 1,
+        "title": "Clean Energy Initiative",
+        "description": "A sustainable project focused on renewable energy solutions for urban communities. This initiative aims to implement solar panels in densely populated areas to reduce carbon footprint and energy costs.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/nrscjldmyvwmgdoob3jg.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "Pharovest Foundation",
+        "amountRaised": "120 PHAR",
+        "contributors": 24,
+        "upvotes": 15
+    },
+    {
+        "id": 2,
+        "title": "Healthcare Tech Platform",
+        "description": "Innovative healthcare solutions using blockchain to improve patient data management and healthcare service delivery across multiple facilities.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/gboqgdjafwviwcjsf5vk.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "MedChain Labs",
+        "amountRaised": "85 PHAR",
+        "contributors": 17,
+        "upvotes": 8
+    },
+    {
+        "id": 3,
+        "title": "Education Access Program",
+        "description": "Providing quality education to underserved communities through digital platforms and local resource centers equipped with modern learning tools.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/axziqhndzsgk3fv8oigb.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "EduChain Initiative",
+        "amountRaised": "65 PHAR",
+        "contributors": 42,
+        "upvotes": 27
+    },
+    {
+        "id": 4,
+        "title": "Decentralized Finance Hub",
+        "description": "Creating an accessible DeFi ecosystem for small businesses and entrepreneurs in developing markets to access loans and financial services.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/vxcbemhdxv2tlvbwbchd.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "DeFi Access Network",
+        "amountRaised": "210 PHAR",
+        "contributors": 89,
+        "upvotes": 53
+    },
+    {
+        "id": 5,
+        "title": "Community Garden Initiative",
+        "description": "Establishing sustainable community gardens in urban food deserts to provide fresh produce and educational opportunities for local residents.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/rhmidahwxfkf2z0vovzz.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "Urban Growth Collective",
+        "amountRaised": "45 PHAR",
+        "contributors": 36,
+        "upvotes": 29
+    },
+    {
+        "id": 6,
+        "title": "Clean Water Project",
+        "description": "Implementing blockchain-verified water quality monitoring and filtration systems in regions facing water scarcity and contamination issues.",
+        "image": "https://res.cloudinary.com/djoebsejh/image/upload/v1746077602/Pharos/w4sj6blydgjuuwu3kmlt.webp",
+        "avatar": "https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png",
+        "creator": "Aqua Chain Foundation",
+        "amountRaised": "130 PHAR",
+        "contributors": 64,
+        "upvotes": 41
+    }
+]

@@ -1,0 +1,130 @@
+[
+  {
+    "_id": "66a24244f477a567025164d1",
+    "id": 1,
+    "title": "Innovative Solar Panels",
+    "description": "A project to develop new efficient solar panels that can be easily integrated into existing structures. This technology aims to make renewable energy more accessible and affordable for everyday use.",
+    "creator": "John Doe",
+    "avatar": "https://randomuser.me/api/portraits/men/1.jpg",
+    "image": "https://images.unsplash.com/photo-1516117172878-fd2c41f4a759",
+    "amountRaised": "$10,000",
+    "contributors": 50,
+    "upvotes": 13,
+    "minimumDonation": "$10",
+    "milestones": [
+      {
+        "title": "Research Phase",
+        "description": "Complete initial research and feasibility studies",
+        "status": "completed",
+        "targetDate": "2023-06-30"
+      },
+      {
+        "title": "Prototype Development",
+        "description": "Build working prototype of the solar panel system",
+        "status": "in-progress",
+        "targetDate": "2023-09-30"
+      },
+      {
+        "title": "Testing Phase",
+        "description": "Conduct extensive testing in various environments",
+        "status": "pending",
+        "targetDate": "2023-12-31"
+      },
+      {
+        "title": "Production",
+        "description": "Begin mass production and distribution",
+        "status": "pending",
+        "targetDate": "2024-03-31"
+      }
+    ],
+    "communityFeedback": [
+      {
+        "user": "Jane Smith",
+        "comment": "This project has great potential! Looking forward to seeing the finished product.",
+        "date": "2023-05-15"
+      },
+      {
+        "user": "Mark Johnson",
+        "comment": "I'm interested in implementing this in my home. Will you be offering installation services?",
+        "date": "2023-05-20"
+      }
+    ],
+    "contributions": [
+      {
+        "contributor": "0x123abc...",
+        "amount": "500",
+        "date": "2023-04-10"
+      },
+      {
+        "contributor": "0x456def...",
+        "amount": "1000",
+        "date": "2023-04-15"
+      }
+    ],
+    "category": "Environment & Energy"
+  },
+  {
+    "_id": "66a24244f477a567025164d2",
+    "id": 2,
+    "title": "Clean Water Initiative",
+    "description": "Providing clean water to underdeveloped regions by setting up filtration systems and wells.",
+    "creator": "Jane Smith",
+    "avatar": "https://randomuser.me/api/portraits/women/2.jpg",
+    "image": "https://images.unsplash.com/photo-1534081333815-ae5019106622",
+    "amountRaised": "$20,000",
+    "contributors": 75,
+    "upvotes": 56,
+    "minimumDonation": "$5",
+    "milestones": [
+      {
+        "title": "Site Selection",
+        "description": "Identify prime locations for well installation",
+        "status": "completed",
+        "targetDate": "2023-03-31"
+      },
+      {
+        "title": "Equipment Procurement",
+        "description": "Purchase necessary filtration and well-drilling equipment",
+        "status": "completed",
+        "targetDate": "2023-05-31"
+      },
+      {
+        "title": "Installation Phase",
+        "description": "Install water filtration systems in target communities",
+        "status": "in-progress",
+        "targetDate": "2023-08-31"
+      },
+      {
+        "title": "Training & Education",
+        "description": "Train local communities on maintenance and usage",
+        "status": "pending",
+        "targetDate": "2023-10-31"
+      }
+    ],
+    "communityFeedback": [
+      {
+        "user": "Michael Brown",
+        "comment": "This initiative is making a real difference in these communities!",
+        "date": "2023-04-05"
+      },
+      {
+        "user": "Sophia Wilson",
+        "comment": "How can we help further with this project?",
+        "date": "2023-04-12"
+      }
+    ],
+    "contributions": [
+      {
+        "contributor": "0x789ghi...",
+        "amount": "200",
+        "date": "2023-03-05"
+      },
+      {
+        "contributor": "0xjkl012...",
+        "amount": "500",
+        "date": "2023-03-12"
+      }
+    ],
+    "category": "Nature"
+  }
+] 
