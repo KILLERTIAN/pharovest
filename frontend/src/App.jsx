@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     // Primary database URL
-    const databaseUrl = 'http://localhost:8000/project/getAllProjects';
+    const databaseUrl = 'https://pharovest.onrender.com/project/getAllProjects';
     
     const fetchProjects = async () => {
       try {

@@ -41,8 +41,8 @@ const MilestoneDetailedView = () => {
   useEffect(() => {
 
     const urls = [
-      `http://localhost:8000/project/${projectId}`,
-      `http://localhost:8000/project/${projectId}`,
+      `https://pharovest.onrender.com/project/${projectId}`,
+      `https://pharovest.onrender.com/project/${projectId}`,
       '/projects.json'
     ];
 

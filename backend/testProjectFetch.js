@@ -5,7 +5,7 @@ import axios from 'axios';
 async function testFetchProject(projectId) {
   try {
     console.log(`Testing fetch for project ID: ${projectId}`);
-    const url = `http://localhost:8000/project/${projectId}`;
+    const url = `https://pharovest.onrender.com/project/${projectId}`;
     console.log('Request URL:', url);
     
     const response = await axios.get(url);

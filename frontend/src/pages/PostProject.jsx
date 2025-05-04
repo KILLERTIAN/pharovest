@@ -50,8 +50,8 @@ function PostProject() {
   const generateContent = async () => {
     setGenerating(true);
     const urls = [
-      'http://localhost:8000/generate-project-content',
-      // 'http://localhost:8000/generate-project-content',
+      'https://pharovest.onrender.com/generate-project-content',
+      // 'https://pharovest.onrender.com/generate-project-content',
     ];
 
     const generateFromURL = async (url) => {
@@ -257,7 +257,7 @@ function PostProject() {
       data.append('milestones', JSON.stringify(backendMilestones));
 
       try {
-        const response = await fetch("http://localhost:8000/project/create", {
+        const response = await fetch("https://pharovest.onrender.com/project/create", {
           method: "POST",
           body: data,
         });

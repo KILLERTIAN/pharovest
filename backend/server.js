@@ -31,7 +31,7 @@ app.use('/', router);
 Connection();
 
 // Ping service URL
-const SERVICE_URL = 'http://localhost:8000';
+const SERVICE_URL = 'https://pharovest.onrender.com';
 
 // Function to ping the service
 const pingService = () => {

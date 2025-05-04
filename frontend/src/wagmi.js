@@ -13,8 +13,8 @@ export const pharosDevnet = {
     symbol: 'PHAR',
   },
   rpcUrls: {
-    default: { http: ['http://localhost:8000/api/pharosrpc'] },
-    public: { http: ['http://localhost:8000/api/pharosrpc'] },
+    default: { http: ['https://pharovest.onrender.com/api/pharosrpc'] },
+    public: { http: ['https://pharovest.onrender.com/api/pharosrpc'] },
   },
   blockExplorers: {
     default: { name: 'PharoScan', url: 'https://pharosscan.xyz' },

@@ -28,9 +28,9 @@ export function Login() {
         setError(null);
 
         try {
-            // 'http://localhost:8000/login'
-            // http://localhost:8000/login
-            const response = await fetch('http://localhost:8000/login', {
+            // 'https://pharovest.onrender.com/login'
+            // https://pharovest.onrender.com/login
+            const response = await fetch('https://pharovest.onrender.com/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

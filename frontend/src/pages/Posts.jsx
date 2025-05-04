@@ -47,7 +47,7 @@ function PostsPage() {
     useEffect(() => {
         const urls = [
             'https://finvest-backend.onrender.com/posts',
-            'http://localhost:8000/posts',
+            'https://pharovest.onrender.com/posts',
         ];
 
         const userData = localStorage.getItem('user');

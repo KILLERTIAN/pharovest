@@ -109,7 +109,7 @@ export const DashboardINV = () => {
         const projectId = contrib.projectId;
         if (!projectNameCache.has(projectId) && !projectIds.has(projectId)) {
           projectIds.add(projectId);
-          const promise = fetch(`http://localhost:8000/project/${projectId}`)
+          const promise = fetch(`https://pharovest.onrender.com/project/${projectId}`)
             .then(response => {
               if (response.ok) return response.json();
               return null;

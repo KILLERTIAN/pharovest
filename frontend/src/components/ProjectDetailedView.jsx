@@ -79,7 +79,7 @@ const networkLogos = {
 const fetchProjectData = async (urls, id) => {
   // Try to get data from the database directly first
   try {
-    const response = await fetch(`http://localhost:8000/project/${id}`);
+    const response = await fetch(`https://pharovest.onrender.com/project/${id}`);
     if (response.ok) {
       return await response.json();
     }
@@ -126,7 +126,7 @@ const fetchContributionsData = async (urls, id) => {
   try {
     // Add cache-busting parameter to ensure fresh data
     const timestamp = new Date().getTime();
-    const apiUrl = `http://localhost:8000/transactions?project=${id}&_t=${timestamp}`;
+    const apiUrl = `https://pharovest.onrender.com/transactions?project=${id}&_t=${timestamp}`;
     console.log(`Fetching from API: ${apiUrl}`);
     
     const response = await fetch(apiUrl, {
@@ -487,7 +487,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
     try {
       // Add cache-busting parameter and improved logging
       const timestamp = new Date().getTime();
-      const apiUrl = `http://localhost:8000/transactions?project=${projectId}&contributor=${walletAddress}&_t=${timestamp}`;
+      const apiUrl = `https://pharovest.onrender.com/transactions?project=${projectId}&contributor=${walletAddress}&_t=${timestamp}`;
       console.log(`Fetching user contributions from: ${apiUrl}`);
       
       try {

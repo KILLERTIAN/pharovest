@@ -33,8 +33,8 @@ function NewPost() {
     const generateContent = async () => {
         setGenerating(true);
         const urls = [
-            'http://localhost:8000/generate-content',
-            'http://localhost:8000/generate-content',
+            'https://pharovest.onrender.com/generate-content',
+            'https://pharovest.onrender.com/generate-content',
         ];
 
         const generateFromURL = async (url) => {
@@ -78,8 +78,8 @@ function NewPost() {
         setPosting(true);
 
         const urls = [
-            'http://localhost:8000/post/new-post',
-            'http://localhost:8000/post/new-post',
+            'https://pharovest.onrender.com/post/new-post',
+            'https://pharovest.onrender.com/post/new-post',
         ];
 
         const data = new FormData();

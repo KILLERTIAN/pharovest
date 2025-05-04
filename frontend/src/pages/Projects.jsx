@@ -54,7 +54,7 @@ function Projects() {
 
     useEffect(() => {
         const urls = [
-            'http://localhost:8000/project/getAllProjects',
+            'https://pharovest.onrender.com/project/getAllProjects',
             '/projects.json'  // Local fallback
         ];
 
