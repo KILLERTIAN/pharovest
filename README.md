@@ -31,6 +31,197 @@ Pharovest is a blockchain-powered platform designed to support **startups, NGOs,
 - **Wallet Connectivity**: WalletConnect
 - **Deployment**: Vercel (frontend), Render (backend)
 
+## 🔗 **Connecting to Pharos Networks**
+
+### Adding Pharos Testnet to MetaMask
+
+1. **Open MetaMask** and click on the network dropdown at the top
+2. **Select "Add Network"**
+3. **Click "Add a network manually"** (at the bottom)
+4. **Enter the following details for Pharos Testnet**:
+   - **Network Name**: Pharos Testnet
+   - **RPC URL**: https://testnet.dplabs-internal.com
+   - **Chain ID**: 688688
+   - **Currency Symbol**: PHAR
+   - **Block Explorer URL**: Leave empty
+5. **Click "Save"**
+
+### Adding Pharos Devnet to MetaMask
+
+1. **Open MetaMask** and click on the network dropdown at the top
+2. **Select "Add Network"**
+3. **Click "Add a network manually"** (at the bottom)
+4. **Enter the following details for Pharos Devnet**:
+   - **Network Name**: Pharos Devnet
+   - **RPC URL**: https://devnet.dplabs-internal.com
+   - **Chain ID**: 50002
+   - **Currency Symbol**: PHAR
+   - **Block Explorer URL**: https://pharosscan.xyz/
+5. **Click "Save"**
+
+### Getting Testnet PHAR Tokens
+
+1. **Join the [Pharos Discord](https://discord.gg/pharos)** or relevant community channel
+2. **Request testnet tokens** from the faucet channel
+3. **Provide your wallet address** in the format specified by the faucet bot
+4. **Wait for confirmation** that tokens have been sent to your wallet
+
+### Troubleshooting Connection Issues
+
+- **If the network doesn't appear**: Try restarting your browser or MetaMask extension
+- **If transactions fail**: Ensure you have sufficient PHAR for gas fees
+- **If RPC errors occur**: Check that your internet connection is stable and you've entered the correct RPC URL
+
+## 🧩 **Adding Pharos Networks to Your Web Application**
+
+### Configuring with Wagmi and RainbowKit
+
+If you're developing a React application that needs to connect to Pharos networks, you can use wagmi and RainbowKit libraries to easily add support:
+
+1. **Install required dependencies**:
+   ```bash
+   npm install wagmi @rainbow-me/rainbowkit viem
+   ```
+
+2. **Define Pharos Networks** in your configuration file:
+   ```javascript
+   // Define Pharos Testnet
+   export const pharosTestnet = {
+     id: 688688,
+     name: 'Pharos Testnet',
+     network: 'pharos-testnet',
+     nativeCurrency: {
+       decimals: 18,
+       name: 'Pharos Testnet Token',
+       symbol: 'PHAR',
+     },
+     rpcUrls: {
+       default: { http: ['https://testnet.dplabs-internal.com'] },
+       public: { http: ['https://testnet.dplabs-internal.com'] },
+     },
+     testnet: true,
+   };
+
+   // Define Pharos Devnet
+   export const pharosDevnet = {
+     id: 50002,
+     name: 'Pharos Devnet',
+     network: 'pharos-devnet',
+     nativeCurrency: {
+       decimals: 18,
+       name: 'Pharos Devnet Token',
+       symbol: 'PHAR',
+     },
+     rpcUrls: {
+       default: { http: ['https://devnet.dplabs-internal.com'] },
+       public: { http: ['https://devnet.dplabs-internal.com'] },
+     },
+     blockExplorers: {
+       default: { name: 'PharoScan', url: 'https://pharosscan.xyz/' },
+     },
+     testnet: true,
+   };
+   ```
+
+3. **Configure Wagmi with the Pharos chains**:
+   ```javascript
+   import { createConfig } from 'wagmi';
+   import { getDefaultWallets } from '@rainbow-me/rainbowkit';
+   import { http } from 'viem';
+
+   // Add Pharos chains to your list of supported chains
+   const allChains = [pharosDevnet, pharosTestnet, ...otherChains];
+
+   // Set up wallet connectors
+   const projectId = 'YOUR_WALLETCONNECT_PROJECT_ID';
+
+   const { connectors } = getDefaultWallets({
+     appName: 'Your App Name',
+     projectId,
+     chains: allChains,
+   });
+
+   // Create the wagmi config
+   export const config = createConfig({
+     chains: allChains,
+     transports: {
+       ...Object.fromEntries(
+         allChains.map(chain => [
+           chain.id,
+           http(chain.rpcUrls.default.http[0])
+         ])
+       ),
+     },
+     connectors,
+   });
+   ```
+
+4. **Implement the RainbowKit provider** in your app:
+   ```jsx
+   import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+   import { WagmiConfig } from 'wagmi';
+   import { config } from './path-to-your-config';
+
+   function App() {
+     return (
+       <WagmiConfig config={config}>
+         <RainbowKitProvider>
+           {/* Your app components */}
+           <ConnectButton />
+         </RainbowKitProvider>
+       </WagmiConfig>
+     );
+   }
+   ```
+
+5. **Use the ConnectButton** component to let users connect their wallets:
+   ```jsx
+   import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+   function Header() {
+     return (
+       <header>
+         <ConnectButton />
+       </header>
+     );
+   }
+   ```
+
+### Custom RPC Configuration
+
+For applications that need custom RPC handling (like the Pharos Devnet proxy in this project):
+
+```javascript
+// Custom transport for Pharos Devnet (if using a proxy endpoint)
+const customTransports = {
+  [pharosDevnet.id]: http(pharosDevnet.rpcUrls.default.http[0], {
+    fetchOptions: {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    },
+  }),
+};
+
+// Include custom transports in your config
+export const config = createConfig({
+  chains: allChains,
+  transports: {
+    ...Object.fromEntries(
+      allChains.filter(chain => chain.id !== pharosDevnet.id).map(chain => [
+        chain.id,
+        http(chain.rpcUrls.default.http[0])
+      ])
+    ),
+    ...customTransports,
+  },
+  connectors,
+});
+```
+
+This configuration will add Pharos networks to your wallet connection modal, allowing users to easily connect to the Pharos blockchain.
 
 ## 🌍 **Deployment Details**
 - **Live Application**: [Pharovest Live](https://pharovest.vercel.app)

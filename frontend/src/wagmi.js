@@ -13,8 +13,8 @@ export const pharosDevnet = {
     symbol: 'PHAR',
   },
   rpcUrls: {
-    default: { http: ['https://pharovest.onrender.com/api/pharosrpc'] },
-    public: { http: ['https://pharovest.onrender.com/api/pharosrpc'] },
+    default: { http: ['https://devnet.dplabs-internal.com'] },
+    public: { http: ['https://devnet.dplabs-internal.com'] },
   },
   blockExplorers: {
     default: { name: 'PharoScan', url: 'https://pharosscan.xyz' },
@@ -24,17 +24,17 @@ export const pharosDevnet = {
 
 // Define Pharos Testnet
 export const pharosTestnet = {
-  id: 2731,
+  id: 688688,
   name: 'Pharos Testnet',
   network: 'pharos-testnet',
   nativeCurrency: {
     decimals: 18,
     name: 'Pharos Testnet Token',
-    symbol: 'tPHAROS',
+    symbol: 'PHAR',
   },
   rpcUrls: {
-    default: { http: ['https://pharos-testnet.rpc.caldera.xyz/http'] },
-    public: { http: ['https://pharos-testnet.rpc.caldera.xyz/http'] },
+    default: { http: ['https://testnet.dplabs-internal.com'] },
+    public: { http: ['https://testnet.dplabs-internal.com'] },
   },
   blockExplorers: {
     default: { name: 'BlockScout', url: 'https://pharos-explorer.caldera.xyz' },

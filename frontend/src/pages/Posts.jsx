@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
 import { Card, CardHeader, CardContent, CardFooter } from '../components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
 import PostsPageSkeleton from '../components/ui/PostsPageSkeleton';
 import useAuth from '../utils/auth';
 import { motion } from 'framer-motion';
+import { DataContext } from '../App';
 
 // Sample tags for posts
 const postTags = [
@@ -37,6 +38,9 @@ const postTags = [
 ];
 
 function PostsPage() {
+    // Access preloaded data from context
+    const { postsData, isPostsLoading } = useContext(DataContext);
+    
     const [posts, setPosts] = useState([]);
     const [userLikes, setUserLikes] = useState({});
     const [loading, setLoading] = useState(true);
@@ -45,11 +49,6 @@ function PostsPage() {
     const { isLoggedIn } = useAuth();
 
     useEffect(() => {
-        const urls = [
-            'https://pharovest.onrender.com/posts',
-            'https://finvest-backend.onrender.com/posts'
-        ];
-
         const userData = localStorage.getItem('user');
 
         // Check if userData is not null or undefined
@@ -66,27 +65,50 @@ function PostsPage() {
             console.log('No user data found in local storage');
         }
 
-        const fetchPosts = async () => {
-            try {
-                const data = await fetchPostData(urls);
-                // Add random tags to each post for demo
-                const enhancedPosts = data.map(post => ({
-                    ...post,
-                    tags: [
-                        postTags[Math.floor(Math.random() * postTags.length)],
-                        postTags[Math.floor(Math.random() * postTags.length)]
-                    ]
-                }));
-                setPosts(enhancedPosts);
-            } catch (error) {
-                console.error('Failed to fetch post data from all sources:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        // Check if we already have posts data from context
+        if (postsData && postsData.length > 0) {
+            // Add random tags to each post for demo
+            const enhancedPosts = postsData.map(post => ({
+                ...post,
+                tags: [
+                    postTags[Math.floor(Math.random() * postTags.length)],
+                    postTags[Math.floor(Math.random() * postTags.length)]
+                ]
+            }));
+            setPosts(enhancedPosts);
+            setLoading(false);
+        } else if (!isPostsLoading) {
+            // If context data loading finished but no data, fetch it directly
+            const urls = [
+                'https://pharovest.onrender.com/posts',
+                'https://finvest-backend.onrender.com/posts'
+            ];
 
-        fetchPosts();
-    }, []);
+            const fetchPosts = async () => {
+                try {
+                    const data = await fetchPostData(urls);
+                    // Add random tags to each post for demo
+                    const enhancedPosts = data.map(post => ({
+                        ...post,
+                        tags: [
+                            postTags[Math.floor(Math.random() * postTags.length)],
+                            postTags[Math.floor(Math.random() * postTags.length)]
+                        ]
+                    }));
+                    setPosts(enhancedPosts);
+                } catch (error) {
+                    console.error('Failed to fetch post data from all sources:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            fetchPosts();
+        } else {
+            // If context data is still loading, wait for it
+            setLoading(true);
+        }
+    }, [postsData, isPostsLoading]);
 
     const fetchPostData = async (urls) => {
         for (const url of urls) {

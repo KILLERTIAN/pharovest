@@ -52,6 +52,7 @@ import {
   getContributionAmount,
   getAllContributors
 } from "../utils/blockchainUtils";
+import { DataContext } from '../App';
 
 // Network logos with Pharos using consistent icons
 const networkLogos = {
@@ -79,7 +80,14 @@ const networkLogos = {
 const fetchProjectData = async (urls, id) => {
   // Try to get data from the database directly first
   try {
-    const response = await fetch(`https://pharovest.onrender.com/project/${id}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+    const response = await fetch(`https://pharovest.onrender.com/project/${id}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
     if (response.ok) {
       return await response.json();
     }
@@ -199,6 +207,9 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
   const [hasBlockchainContribution, setHasBlockchainContribution] = useState(false);
   const [blockchainAmount, setBlockchainAmount] = useState("0");
   const [refreshingData, setRefreshingData] = useState(false);
+  const { projectsData } = useContext(DataContext);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Add socket.io connection for real-time updates
   useEffect(() => {
@@ -321,26 +332,39 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
 
   // Fetch project data and all contributions
   useEffect(() => {
-    const urls = [
-      `/project-details.json` // Only used as fallback
-    ];
-
-    const fetchData = async () => {
+    const getProjectDetails = async () => {
+      setIsLoading(true);
       try {
-        const data = await fetchProjectData(urls, projectId);
-        if (data) {
-          setProject(data);
-          fetchAllContributions();
-        } else {
-          console.error("No project data returned");
+        // First, check if we already have this project in our context data
+        const foundProject = projectsData.find(p => 
+          (p.id && p.id.toString() === projectId) || p._id === projectId
+        );
+
+        if (foundProject) {
+          setProject(foundProject);
+          setIsLoading(false);
+          return;
         }
+
+        // If not found in context, fetch individually
+        const urls = [
+          `https://pharovest.onrender.com/project/getAllProjects`,
+          'https://finvest-backend.onrender.com/projects',
+          '/projects.json'
+        ];
+
+        const data = await fetchProjectData(urls, projectId);
+        setProject(data);
       } catch (error) {
-        console.error("Failed to fetch project data:", error);
+        console.error('Error fetching project:', error);
+        setError('Failed to load project. Please try again later.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData();
-  }, [projectId]);
+    getProjectDetails();
+  }, [projectId, projectsData]);
 
   // Check blockchain contributions when wallet connects
   useEffect(() => {
@@ -677,6 +701,33 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Show error message if there's an error
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#05140D] text-white p-6">
+        <div className="max-w-4xl w-full p-8 bg-[#0A1F15] rounded-xl shadow-lg">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+          <p className="text-white">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-6 py-2 bg-[#1B7A57] text-white rounded-lg hover:bg-[#145E42] transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#05140D]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#1B7A57]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-[#05140D]">

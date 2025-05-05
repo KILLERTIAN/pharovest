@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import UserProfileIcon from '../components/ui/UserProfileIcon';
 import { SkeletonCard } from "../components/ui/SkeletonCard";
 import '../App.css';
 import useAuth from '../utils/auth';
+import { DataContext } from '../App';
 
 const fetchProjectData = async (urls) => {
     for (const url of urls) {
@@ -40,6 +41,9 @@ const fetchProjectData = async (urls) => {
 };
 
 function Projects() {
+    // Get pre-loaded projects data from context
+    const { projectsData, isProjectsLoading } = useContext(DataContext);
+    
     const [projects, setProjects] = useState([]);
     const [filteredProjects, setFilteredProjects] = useState([]);
     const [recommendedProjects, setRecommendedProjects] = useState([]);
@@ -53,12 +57,6 @@ function Projects() {
     const { isLoggedIn } = useAuth();
 
     useEffect(() => {
-        const urls = [
-            'https://pharovest.onrender.com/project/getAllProjects',
-            'https://finvest-backend.onrender.com/project/getAllProjects',
-            '/projects.json'  // Local fallback
-        ];
-
         // Retrieve user data from local storage
         const userData = localStorage.getItem('user');
 
@@ -71,28 +69,51 @@ function Projects() {
             }
         }
 
-        const fetchData = async () => {
-            try {
-                const data = await fetchProjectData(urls);
-                if (data && data.length > 0) {
-                    setProjects(data);
-                    setFilteredProjects(data);
+        // Check if we already have projects data from context
+        if (projectsData && projectsData.length > 0) {
+            setProjects(projectsData);
+            setFilteredProjects(projectsData);
 
-                    // Set top 3 projects as recommended (in a real app, this would use an AI algorithm)
-                    const top3 = [...data]
-                        .sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0))
-                        .slice(0, 3);
-                    setRecommendedProjects(top3);
+            // Set top 3 projects as recommended
+            const top3 = [...projectsData]
+                .sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0))
+                .slice(0, 3);
+            setRecommendedProjects(top3);
+            setLoading(false);
+        } else if (!isProjectsLoading) {
+            // If context data loading is finished but we don't have data, fetch it directly
+            const urls = [
+                'https://pharovest.onrender.com/project/getAllProjects',
+                'https://finvest-backend.onrender.com/project/getAllProjects',
+                '/projects.json'  // Local fallback
+            ];
+
+            const fetchData = async () => {
+                try {
+                    const data = await fetchProjectData(urls);
+                    if (data && data.length > 0) {
+                        setProjects(data);
+                        setFilteredProjects(data);
+
+                        // Set top 3 projects as recommended
+                        const top3 = [...data]
+                            .sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0))
+                            .slice(0, 3);
+                        setRecommendedProjects(top3);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch project data from all sources:', error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error('Failed to fetch project data from all sources:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+            };
 
-        fetchData();
-    }, []);
+            fetchData();
+        } else {
+            // If context data is still loading, wait for it
+            setLoading(true);
+        }
+    }, [projectsData, isProjectsLoading]);
 
     // Filter projects based on search term and selected filter
     useEffect(() => {
