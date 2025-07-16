@@ -85,7 +85,7 @@ function Projects() {
             const urls = [
                 'https://pharovest.onrender.com/project/getAllProjects',
                 'https://finvest-backend.onrender.com/project/getAllProjects',
-                '/projects.json'  // Local fallback
+                // '/projects.json'  // Local fallback
             ];
 
             const fetchData = async () => {
