@@ -20,7 +20,7 @@ const PORT = 8000;
 // app.use(cors({ origin : 'https://finvest-2.vercel.app', credentials: true })); //In production localhost has to be changed to the frontend url
 // app.use(cors({ origin : 'http://localhost:5173', credentials: true })); //In production localhost has to be changed to the frontend url
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://pharovest.vercel.app','https://pharovest.omsharma050322.workers.dev'],
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://pharovest.vercel.app','https://pharovest.omsharma050322.workers.dev','https://pharovest.garcade.in'],
     credentials: true
 }));
 app.use(cookieParser())
