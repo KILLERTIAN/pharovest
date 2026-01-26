@@ -44,11 +44,11 @@ import DonationModal from "./DonationModal";
 import { WalletContext } from "@/context/WalletContext";
 import PropTypes from 'prop-types';
 import { ethers } from 'ethers';
-import { 
-  PHAROS_NETWORKS, 
-  identifyNetwork, 
-  getContract, 
-  hasContributedToProject, 
+import {
+  PHAROS_NETWORKS,
+  identifyNetwork,
+  getContract,
+  hasContributedToProject,
   getContributionAmount,
   getAllContributors
 } from "../utils/blockchainUtils";
@@ -57,8 +57,8 @@ import { DataContext } from '../App';
 // Network logos with Pharos using consistent icons
 const networkLogos = {
   [PHAROS_NETWORKS.MAINNET.name]: "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
-  [PHAROS_NETWORKS.TESTNET.name]: "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
-  [PHAROS_NETWORKS.DEVNET.name]: "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
+  [PHAROS_NETWORKS.SEPOLIA.name]: "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
+  [PHAROS_NETWORKS.SEPOLIA.name]: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp",
   "Pharos": "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
   "Ethereum":
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkj3dStbrL3JvOAo7Sn5VEoxIRFsLx-ft4WXZUOpl9d9HmvpTaNxpOXgLe9fECnYLp83Q&usqp=CAU",
@@ -87,7 +87,7 @@ const fetchProjectData = async (urls, id) => {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
-    
+
     if (response.ok) {
       return await response.json();
     }
@@ -99,7 +99,7 @@ const fetchProjectData = async (urls, id) => {
   // Only use fallbacks as a last resort
   for (const url of urls) {
     if (url.includes('localhost')) continue; // Skip the localhost URL we already tried
-    
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -107,7 +107,7 @@ const fetchProjectData = async (urls, id) => {
         continue;
       }
       const data = await response.json();
-      
+
       if (Array.isArray(data)) {
         // For array responses (like the local fallback JSON), find the specific project
         const project = data.find(p => p.id && p.id.toString() === id || p._id === id);
@@ -119,7 +119,7 @@ const fetchProjectData = async (urls, id) => {
           continue;
         }
       }
-      
+
       return data;
     } catch (error) {
       console.error(`Error fetching project data from ${url}:`, error);
@@ -136,14 +136,14 @@ const fetchContributionsData = async (urls, id) => {
     const timestamp = new Date().getTime();
     const apiUrl = `https://pharovest.onrender.com/transactions?project=${id}&_t=${timestamp}`;
     console.log(`Fetching from API: ${apiUrl}`);
-    
+
     const response = await fetch(apiUrl, {
       headers: {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       }
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       console.log(`Successfully fetched ${data.length} contributions from API:`, data);
@@ -157,32 +157,32 @@ const fetchContributionsData = async (urls, id) => {
   // Only use fallbacks as a last resort
   for (const url of urls) {
     if (url.includes('localhost')) continue; // Skip the localhost URL we already tried
-    
+
     try {
       const timestamp = new Date().getTime();
       const fetchUrl = url.includes('?') ? `${url}&_t=${timestamp}` : `${url}?_t=${timestamp}`;
       console.log(`Trying fallback: ${fetchUrl}`);
-      
+
       const response = await fetch(fetchUrl, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         }
       });
-      
+
       if (!response.ok) {
         console.warn(`Failed to fetch from ${url}: ${response.status} ${response.statusText}`);
         continue;
       }
-      
+
       let data = await response.json();
-      
+
       // For array responses from local JSON, filter by project ID
       if (Array.isArray(data) && url.includes('contributions.json')) {
         data = data.filter(contrib => contrib.project === id.toString());
         console.log('Using fallback contributions data from local file, found:', data.length);
       }
-      
+
       return data;
     } catch (error) {
       console.error(`Error fetching contributions data from ${url}:`, error);
@@ -192,7 +192,7 @@ const fetchContributionsData = async (urls, id) => {
   return []; // Return empty array if no contributions found
 };
 
-const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
+const ProjectDetailedView = ({ handleUpvote = () => { }, userUpvotes = {} }) => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -221,7 +221,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
         refreshContributions();
       }
     }, 30000); // Refresh every 30 seconds (increased from 15s)
-    
+
     // Clean up interval on unmount
     return () => clearInterval(refreshInterval);
   }, [projectId]); // Only re-establish on projectId change, not on refreshingData changes
@@ -271,39 +271,39 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
   // Improved function to check blockchain contributions
   const checkBlockchainContributions = async () => {
     if (!signer || !walletAddress || !projectId) return;
-    
+
     try {
       console.log(`Checking blockchain for contributions to project ${projectId} from ${walletAddress}`);
       const contract = await getContract(signer);
-      
+
       // First check if project exists and is valid on the blockchain
       try {
         const projectData = await contract.getProject(projectId);
         console.log(`Project ${projectId} blockchain data:`, projectData);
-        
+
         // Check if this is a valid numeric ID on blockchain
         const numericProjectId = parseInt(projectId, 10);
         if (isNaN(numericProjectId)) {
           console.error(`Invalid project ID for blockchain: ${projectId}`);
           return;
         }
-        
+
         // Check for user contributions on this specific project
         const hasContrib = await hasContributedToProject(contract, numericProjectId, walletAddress);
         console.log(`User has blockchain contribution for project ${numericProjectId}: ${hasContrib}`);
         setHasBlockchainContribution(hasContrib);
-        
+
         if (hasContrib) {
           const amount = await getContributionAmount(contract, numericProjectId, walletAddress);
           console.log(`User has contributed ${amount} ETH to project ${numericProjectId}`);
           setBlockchainAmount(amount);
-          
+
           // Don't call refreshContributions here to avoid infinite loops
           // The parent function will update the UI based on blockchainAmount state
         }
       } catch (error) {
         console.error(`Error checking project ${projectId} on blockchain:`, error);
-        
+
         // Try again with numeric ID conversion in case the string ID is causing issues
         try {
           const numericProjectId = parseInt(projectId, 10);
@@ -312,12 +312,12 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             const hasContrib = await hasContributedToProject(contract, numericProjectId, walletAddress);
             console.log(`(Retry) User has blockchain contribution for project ${numericProjectId}: ${hasContrib}`);
             setHasBlockchainContribution(hasContrib);
-            
+
             if (hasContrib) {
               const amount = await getContributionAmount(contract, numericProjectId, walletAddress);
               console.log(`(Retry) User has contributed ${amount} ETH to project ${numericProjectId}`);
               setBlockchainAmount(amount);
-              
+
               // Don't call refreshContributions here to avoid infinite loops
             }
           }
@@ -336,7 +336,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       setIsLoading(true);
       try {
         // First, check if we already have this project in our context data
-        const foundProject = projectsData.find(p => 
+        const foundProject = projectsData.find(p =>
           (p.id && p.id.toString() === projectId) || p._id === projectId
         );
 
@@ -380,42 +380,42 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       const urls = [
         `/contributions.json`  // Only used as fallback
       ];
-      
+
       try {
         const contributionsData = await fetchContributionsData(urls, projectId);
-        
+
         if (!contributionsData || contributionsData.length === 0) {
           console.warn("No contributions data found in database, checking blockchain...");
-          
+
           // Another attempt to check blockchain for this project
           if (signer) {
             try {
               const contract = await getContract(signer);
               // Convert to numeric ID for the blockchain call
               const numericProjectId = parseInt(projectId, 10);
-              
+
               if (isNaN(numericProjectId)) {
                 console.error(`Invalid project ID for blockchain: ${projectId}`);
                 setAllContributions([]);
                 setLoadingContributions(false);
                 return;
               }
-              
+
               console.log(`Checking blockchain for contributions to project ID: ${numericProjectId}`);
-              
+
               try {
                 const projectData = await contract.getProject(numericProjectId);
-                
+
                 if (projectData && projectData[1] > 0) { // If amountRaised > 0
                   console.log("Project has raised funds on blockchain:", ethers.utils.formatEther(projectData[1]), "ETH");
-                  
+
                   // Get all contributors from the blockchain
                   const contributors = await getAllContributors(contract, numericProjectId);
                   console.log(`Found ${contributors.length} contributors for project ${numericProjectId} on blockchain`);
-                  
+
                   if (contributors && contributors.length > 0) {
                     const syntheticContributions = [];
-                    
+
                     for (const contributor of contributors) {
                       try {
                         const amount = await getContributionAmount(contract, numericProjectId, contributor);
@@ -426,7 +426,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                             amount,
                             usdValue: (parseFloat(amount) * 3000).toFixed(2),
                             timestamp: new Date().toISOString(),
-                            network: PHAROS_NETWORKS.DEVNET.name, // Use DEVNET name for consistency
+                            network: PHAROS_NETWORKS.SEPOLIA.name, // Use SEPOLIA name for consistency
                             blockchainVerified: true,
                             transactionHash: null // Use null instead of text string
                           });
@@ -435,7 +435,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                         console.error("Error getting contributor data:", err);
                       }
                     }
-                    
+
                     if (syntheticContributions.length > 0) {
                       console.log("Created synthetic contributions from blockchain:", syntheticContributions);
                       setAllContributions(syntheticContributions.map(contrib => {
@@ -446,7 +446,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                           network: networkData.name,
                           formattedDate: new Date(contrib.timestamp).toLocaleDateString(),
                           donor: contrib.contributor,
-                          networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.DEVNET.icon
+                          networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.SEPOLIA.icon
                         };
                       }));
                       setLoadingContributions(false);
@@ -463,17 +463,17 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
               console.error("Error checking blockchain for contributions:", err);
             }
           }
-          
+
           setAllContributions([]);
           setLoadingContributions(false);
           return;
         }
-        
+
         // Process and sort contributions by date (newest first)
         const processedData = contributionsData.map(contrib => {
           // Determine network name consistently
           const networkData = identifyNetwork(contrib.network);
-          
+
           return {
             ...contrib,
             donatedAt: contrib.timestamp || new Date().toISOString(),
@@ -482,13 +482,13 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             donor: contrib.contributor || "Anonymous",
             amount: contrib.amount || "0",
             // Calculate USD value using the exchange rate or use provided value
-            usdValue: contrib.usdValue || 
+            usdValue: contrib.usdValue ||
               (parseFloat(contrib.amount || 0) * 3000).toFixed(2), // Fallback calculation
             // Add link to the network logo
-            networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.DEVNET.icon
+            networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.SEPOLIA.icon
           };
         }).sort((a, b) => new Date(b.donatedAt) - new Date(a.donatedAt));
-        
+
         console.log(`Processed ${processedData.length} contributions with proper formatting`);
         setAllContributions(processedData);
       } catch (error) {
@@ -506,14 +506,14 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
   // Add function to fetch user's contributions for this project
   const fetchUserContributions = async () => {
     if (!walletAddress || !projectId) return;
-    
+
     setLoadingUserContributions(true);
     try {
       // Add cache-busting parameter and improved logging
       const timestamp = new Date().getTime();
       const apiUrl = `https://pharovest.onrender.com/transactions?project=${projectId}&contributor=${walletAddress}&_t=${timestamp}`;
       console.log(`Fetching user contributions from: ${apiUrl}`);
-      
+
       try {
         const response = await fetch(apiUrl, {
           headers: {
@@ -521,13 +521,13 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             'Pragma': 'no-cache'
           }
         });
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
         console.log(`Fetched ${data.length} user contributions:`, data);
-        
+
         // If we have blockchain contribution but no data in database
         if (data.length === 0 && hasBlockchainContribution) {
           console.log(`User has blockchain contribution (${blockchainAmount} ETH) but no database records, creating synthetic record`);
@@ -536,7 +536,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             contributor: walletAddress,
             project: projectId,
             timestamp: new Date().toISOString(),
-            network: PHAROS_NETWORKS.TESTNET.name,
+            network: PHAROS_NETWORKS.SEPOLIA.name,
             amount: blockchainAmount,
             usdValue: (parseFloat(blockchainAmount) * 3000).toFixed(2),
             transactionHash: null,
@@ -547,12 +547,12 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
           setLoadingUserContributions(false);
           return;
         }
-        
+
         // Process the data to add formatted date and other fields
         const processedData = data.map(contrib => {
           // Determine network name consistently
           const networkData = identifyNetwork(contrib.network);
-          
+
           return {
             ...contrib,
             donatedAt: contrib.timestamp || new Date().toISOString(),
@@ -561,14 +561,14 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             // Calculate USD value if not provided
             usdValue: contrib.usdValue || (parseFloat(contrib.amount || 0) * 3000).toFixed(2),
             // Add link to the network logo
-            networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.TESTNET.icon
+            networkIcon: networkLogos[networkData.name] || PHAROS_NETWORKS.SEPOLIA.icon
           };
         });
-        
+
         setUserContributions(processedData);
       } catch (error) {
         console.error(`Error fetching user contributions:`, error);
-        
+
         // If database fetch fails but we have blockchain contribution
         if (hasBlockchainContribution) {
           console.log(`Fallback to blockchain contribution data (${blockchainAmount} ETH)`);
@@ -576,7 +576,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             contributor: walletAddress,
             project: projectId,
             timestamp: new Date().toISOString(),
-            network: PHAROS_NETWORKS.TESTNET.name,
+            network: PHAROS_NETWORKS.SEPOLIA.name,
             amount: blockchainAmount,
             usdValue: (parseFloat(blockchainAmount) * 3000).toFixed(2),
             transactionHash: null,
@@ -601,7 +601,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       fetchUserContributions();
     }
   }, [walletAddress, projectId]);
-  
+
   // Format ETH address for display
   const formatAddress = (address) => {
     if (!address || typeof address !== 'string') return 'Unknown';
@@ -611,17 +611,17 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
   // Format timestamp to relative time (e.g., "2 hours ago")
   const getRelativeTime = (timestamp) => {
     if (!timestamp) return 'Unknown time';
-    
+
     try {
       // First validate the timestamp
       const date = new Date(timestamp);
       if (isNaN(date.getTime())) {
         return 'Invalid date';
       }
-      
+
       const now = new Date();
       const diffInSeconds = Math.floor((now - date) / 1000);
-      
+
       if (diffInSeconds < 60) {
         return `${diffInSeconds} seconds ago`;
       } else if (diffInSeconds < 3600) {
@@ -631,9 +631,9 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       } else if (diffInSeconds < 604800) {
         return `${Math.floor(diffInSeconds / 86400)} days ago`;
       } else {
-        return date.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'short', 
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
@@ -644,17 +644,18 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       return 'Date error';
     }
   };
-  
+
   // Get appropriate network badge color
   const getNetworkColor = (network) => {
     const networkColors = {
+      'Sepolia Testnet': 'bg-blue-600 text-white',
       'Pharos': 'bg-[#2FB574] text-white',
-      'Pharos Testnet': 'bg-blue-500 text-white',
+      'Pharos Testnet': 'bg-green-600 text-white',
       'Pharos Devnet': 'bg-purple-500 text-white',
       'Ethereum': 'bg-blue-700 text-white',
       'Polygon': 'bg-purple-700 text-white'
     };
-    
+
     return networkColors[network] || 'bg-gray-500 text-white';
   };
 
@@ -677,7 +678,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
               </Button>
             </Link>
           </header>
-          
+
           <div className="w-full max-w-4xl mx-auto p-8 mt-8 text-center">
             <div className="bg-[#1A3A2C] p-8 rounded-xl shadow-lg">
               <h2 className="text-2xl font-bold mb-4">Project Not Found</h2>
@@ -709,7 +710,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
         <div className="max-w-4xl w-full p-8 bg-[#0A1F15] rounded-xl shadow-lg">
           <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
           <p className="text-white">{error}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-4 px-6 py-2 bg-[#1B7A57] text-white rounded-lg hover:bg-[#145E42] transition-colors"
           >
@@ -719,7 +720,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
       </div>
     );
   }
-  
+
   // Show loading state
   if (isLoading) {
     return (
@@ -836,8 +837,8 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                         >
                           <div
                             className={`h-5 w-5 z-[5] rounded-full ${index < project.milestones.length
-                                ? "bg-green-300"
-                                : "bg-green-300"
+                              ? "bg-green-300"
+                              : "bg-green-300"
                               }`}
                           />
                           <p className="text-gray-100">{milestone.title}</p>
@@ -882,7 +883,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             </div>
           </div>
         </FadeIn>
-        
+
 
         {/* All Contributions Section */}
         <div className="flex-1 mt-8 p-5 bg-[#1A3A2C] rounded-xl shadow-lg">
@@ -893,8 +894,8 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                 All Project Contributions
               </h2>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex items-center gap-1 text-[#2FB574] border-[#2FB574] bg-[#05140D] hover:bg-[#2FB574] hover:text-white hover:border-[#2FB574]"
               onClick={refreshContributions}
@@ -904,7 +905,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
               <span>Refresh</span>
             </Button>
           </div>
-          
+
           {loadingContributions ? (
             <div className="flex justify-center items-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2FB574]"></div>
@@ -913,7 +914,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             <div className="mt-4 p-6 flex flex-col items-center justify-center gap-4 border border-dashed border-[#2C5440] rounded-lg">
               <Wallet className="h-12 w-12 text-gray-500" />
               <p className="text-gray-300 text-center">No contributions have been made to this project yet.</p>
-              <Button 
+              <Button
                 className="bg-[#2FB574] text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
                 onClick={handleDonateClick}
               >
@@ -942,7 +943,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <Table className="w-full">
                   <TableHeader>
@@ -993,9 +994,9 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                         </TableCell>
                         <TableCell className="text-gray-100">
                           {contribution.transactionHash && contribution.transactionHash !== "Not stored in database" && typeof contribution.transactionHash === 'string' && !contribution.transactionHash.includes("Verified") ? (
-                            <a 
+                            <a
                               href={`https://pharosscan.xyz/tx/${contribution.transactionHash}`}
-                              target="_blank" 
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-[#2FB574] hover:underline flex items-center gap-1"
                             >
@@ -1011,17 +1012,17 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                         <TableCell>
                           <Badge className={`${getNetworkColor(contribution.network)}`}>
                             <div className="flex items-center gap-1">
-                              <img 
-                                src={PHAROS_NETWORKS.TESTNET.icon} 
-                                alt={contribution.network} 
+                              <img
+                                src={PHAROS_NETWORKS.SEPOLIA.icon}
+                                alt="Sepolia Testnet"
                                 className="w-3 h-3 rounded-full"
                               />
-                              <span>{contribution.network || "Pharos"}</span>
+                              <span>{contribution.network || "Sepolia Testnet"}</span>
                             </div>
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-100 font-medium">
-                          {contribution.amount} ETH
+                          {contribution.amount} Ξ
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
@@ -1034,7 +1035,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                   </TableBody>
                 </Table>
               </div>
-              
+
               {totalPages > 1 && (
                 <div className="flex justify-center mt-6">
                   <Pagination>
@@ -1044,7 +1045,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                         disabled={currentPage === 1}
                         className="cursor-pointer"
                       />
-                      
+
                       {[...Array(totalPages)].map((_, i) => (
                         <PaginationItem key={i}>
                           <PaginationLink
@@ -1056,7 +1057,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                           </PaginationLink>
                         </PaginationItem>
                       ))}
-                      
+
                       <PaginationNext
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
@@ -1069,7 +1070,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             </>
           )}
         </div>
-        
+
         {/* Your contributions section - improved blockchain verification */}
         {walletAddress && (
           <div className="flex-1 mt-8 p-5 bg-[#1A3A2C] rounded-xl shadow-lg">
@@ -1080,14 +1081,14 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                   Your Contributions
                 </h2>
               </div>
-              
+
               {/* Add badge if blockchain contributions detected but not shown in UI */}
               {hasBlockchainContribution && userContributions.length === 0 && (
                 <Badge className="bg-yellow-600">Blockchain contribution detected</Badge>
               )}
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 size="sm"
                 className="flex items-center gap-1 text-[#2FB574] border-[#2FB574] bg-[#05140D] hover:bg-[#2FB574] hover:text-white hover:border-[#2FB574]"
                 onClick={refreshContributions}
@@ -1097,7 +1098,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                 <span>Refresh</span>
               </Button>
             </div>
-            
+
             {loadingUserContributions ? (
               <div className="flex justify-center items-center h-32">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2FB574]"></div>
@@ -1114,14 +1115,14 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                           Verified on blockchain but not found in database
                         </CardDescription>
                       </div>
-                      <Badge className={`${getNetworkColor(PHAROS_NETWORKS.TESTNET.name)}`}>
+                      <Badge className={`${getNetworkColor("Sepolia Testnet")}`}>
                         <div className="flex items-center gap-1">
-                          <img 
-                            src={PHAROS_NETWORKS.TESTNET.icon} 
-                            alt={PHAROS_NETWORKS.TESTNET.name} 
+                          <img
+                            src={PHAROS_NETWORKS.SEPOLIA.icon}
+                            alt="Sepolia Testnet"
                             className="w-3 h-3 rounded-full"
                           />
-                          <span>{PHAROS_NETWORKS.TESTNET.name}</span>
+                          <span>Sepolia Testnet</span>
                         </div>
                       </Badge>
                     </CardHeader>
@@ -1140,7 +1141,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                     </CardContent>
                   </Card>
                 )}
-              
+
                 {/* Show database contribution records */}
                 {userContributions.map((contribution, index) => (
                   <Card key={index} className="bg-[#143121] border-[#2C5440] overflow-hidden">
@@ -1153,12 +1154,12 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                       </div>
                       <Badge className={`${getNetworkColor(contribution.network)}`}>
                         <div className="flex items-center gap-1">
-                          <img 
-                            src={contribution.networkIcon || networkLogos[contribution.network] || PHAROS_NETWORKS.MAINNET.icon} 
-                            alt={contribution.network} 
+                          <img
+                            src={contribution.networkIcon || networkLogos[contribution.network] || PHAROS_NETWORKS.MAINNET.icon}
+                            alt="Sepolia Testnet"
                             className="w-3 h-3 rounded-full"
                           />
-                          <span>{contribution.network || "Pharos"}</span>
+                          <span>{contribution.network || "Sepolia Testnet"}</span>
                         </div>
                       </Badge>
                     </CardHeader>
@@ -1166,15 +1167,15 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
                       <div className="flex flex-col md:flex-row justify-between gap-4">
                         <div>
                           <p className="text-gray-400 text-sm mb-1">Amount</p>
-                          <p className="text-white text-xl font-semibold">{contribution.amount} ETH</p>
+                          <p className="text-white text-xl font-semibold">{contribution.amount} Ξ</p>
                           <p className="text-green-300 text-sm">≈ ${contribution.usdValue}</p>
                         </div>
                         <div>
                           <p className="text-gray-400 text-sm mb-1">Transaction</p>
                           {contribution.transactionHash && contribution.transactionHash !== "Not stored in database" && typeof contribution.transactionHash === 'string' && !contribution.transactionHash.includes("Verified") ? (
-                            <a 
+                            <a
                               href={`https://pharosscan.xyz/tx/${contribution.transactionHash}`}
-                              target="_blank" 
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-[#2FB574] hover:underline flex items-center gap-1"
                             >
@@ -1204,7 +1205,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
               <div className="mt-4 p-6 flex flex-col items-center justify-center gap-4 border border-dashed border-[#2C5440] rounded-lg">
                 <Wallet className="h-12 w-12 text-gray-500" />
                 <p className="text-gray-300 text-center">You haven&apos;t contributed to this project yet.</p>
-                <Button 
+                <Button
                   className="bg-[#2FB574] text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
                   onClick={handleDonateClick}
                 >
@@ -1214,7 +1215,7 @@ const ProjectDetailedView = ({ handleUpvote = () => {}, userUpvotes = {} }) => {
             )}
           </div>
         )}
-        
+
         {/* Donation Modal */}
         {isModalOpen && (
           <DonationModal

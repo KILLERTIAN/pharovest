@@ -3,8 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Pharovest is ERC721, Ownable {
+contract Pharovest is ERC721, Ownable, ReentrancyGuard {
     // Project and Milestone Data Structures
     struct Milestone {
         string title;
@@ -25,7 +26,7 @@ contract Pharovest is ERC721, Ownable {
     uint public projectCount;
     mapping(uint => Project) public projects;
     uint public tokenIdCounter;
-    string public constant NETWORK_NAME = "Pharos Testnet";
+    string public constant NETWORK_NAME = "Sepolia Testnet";
     string public constant PROJECT_INFO = "Pharovest Blockchain Crowdfunding Platform";
 
     // Events
@@ -91,28 +92,44 @@ contract Pharovest is ERC721, Ownable {
         emit NFTMinted(msg.sender, tokenId);
     }
 
-    function withdraw(uint projectId) external {
+    function withdraw(uint projectId) external nonReentrant {
         Project storage project = projects[projectId];
         require(project.isActive, "Project is not active");
         uint contribution = project.contributions[msg.sender];
         require(contribution > 0, "No contribution to withdraw");
+        
+        // Calculate refund amount (90% of contribution)
         uint refundAmount = (contribution * 90) / 100;
+        
+        // Effects: Update state BEFORE external call
         project.amountRaised -= contribution;
         project.contributions[msg.sender] = 0;
-        payable(msg.sender).transfer(refundAmount);
+        
+        // Interaction: Use call instead of transfer for better compatibility
+        (bool success, ) = payable(msg.sender).call{value: refundAmount}("");
+        require(success, "Transfer failed");
+        
         emit WithdrawalMade(projectId, msg.sender, refundAmount);
     }
 
-    function transferFunds(uint projectId, uint milestoneIndex) external onlyOwner {
+    function transferFunds(uint projectId, uint milestoneIndex) external onlyOwner nonReentrant {
         Project storage project = projects[projectId];
         require(project.isActive, "Project is not active");
         require(milestoneIndex < project.milestones.length, "Invalid milestone index");
         Milestone storage milestone = project.milestones[milestoneIndex];
         require(!milestone.isCompleted, "Milestone already completed");
         require(project.amountRaised >= milestone.amountRequired, "Insufficient funds for milestone");
-        milestone.recipient.transfer(milestone.amountRequired);
+        
+        // Mark milestone as completed BEFORE transfer
         milestone.isCompleted = true;
+        
+        // Use call instead of transfer for better compatibility
+        (bool success, ) = milestone.recipient.call{value: milestone.amountRequired}("");
+        require(success, "Transfer failed");
+        
         emit FundsTransferred(projectId, milestoneIndex);
+        
+        // Check if all milestones are completed
         bool allCompleted = true;
         for (uint i = 0; i < project.milestones.length; i++) {
             if (!project.milestones[i].isCompleted) {

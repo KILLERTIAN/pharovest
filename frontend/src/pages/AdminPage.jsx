@@ -3,11 +3,11 @@ import { ethers } from 'ethers';
 import { WalletContext } from '@/context/WalletContext';
 import { getContractAddress } from "@/utils/blockchainUtils";
 import PharovestABI from '@/utils/PharovestABI.json';
-import { pharosDevnet } from '@/wagmi';
+import { sepolia } from 'wagmi/chains';
 import { toast } from 'react-hot-toast';
 
 const AdminPage = () => {
-  const { walletAddress, signer, connectWallet, isConnected, currentChainId, switchToPharosDevnet } = useContext(WalletContext);
+  const { walletAddress, signer, connectWallet, isConnected, currentChainId, switchToSepolia } = useContext(WalletContext);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(0);
   const [totalAmount, setTotalAmount] = useState('2');
@@ -26,20 +26,20 @@ const AdminPage = () => {
 
     try {
       setLoading(true);
-      
-      // Check if on Pharos Devnet
-      if (currentChainId !== pharosDevnet.id) {
-        await switchToPharosDevnet();
+
+      // Check if on Sepolia
+      if (currentChainId !== sepolia.id) {
+        await switchToSepolia();
         // Wait a bit for network switch
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      
+
       const contractAddress = getContractAddress(currentChainId);
       const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
       await provider.send('eth_requestAccounts', []);
       const txSigner = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, PharovestABI, txSigner);
-      
+
       // Format milestones for the contract
       const formattedMilestones = milestones.map(m => ({
         title: m.title,
@@ -47,36 +47,36 @@ const AdminPage = () => {
         recipient: m.recipient || walletAddress,
         isCompleted: m.isCompleted
       }));
-      
+
       // Parse total amount to ETH
       const parsedTotalAmount = ethers.utils.parseEther(totalAmount);
-      
+
       console.log("Creating project with data:", {
         totalAmount: parsedTotalAmount.toString(),
         milestones: formattedMilestones
       });
-      
+
       // Create project
       const tx = await contract.createProject(parsedTotalAmount, formattedMilestones);
-      
+
       console.log("Transaction sent:", tx.hash);
       toast.success("Project creation transaction sent!");
-      
+
       // Wait for confirmation
       const receipt = await tx.wait();
       console.log("Transaction confirmed:", receipt);
-      
+
       // Get current project count
       const projectCount = await contract.projectCount();
       const newProjectId = projectCount.sub(1).toString();
       setProjectId(newProjectId);
-      
+
       setResult({
         success: true,
         message: `Project created successfully! Project ID: ${newProjectId}`,
         transactionHash: tx.hash
       });
-      
+
       toast.success(`Project created! ID: ${newProjectId}`);
     } catch (error) {
       console.error("Error creating project:", error);
@@ -99,14 +99,14 @@ const AdminPage = () => {
 
     try {
       setLoading(true);
-      
+
       const contractAddress = getContractAddress(currentChainId);
       const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
       const contract = new ethers.Contract(contractAddress, PharovestABI, provider);
-      
+
       // Get project details
       const project = await contract.projects(projectId);
-      
+
       setResult({
         success: true,
         message: "Project details retrieved",
@@ -157,9 +157,9 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-[#05140D] text-white p-8">
       <h1 className="text-3xl font-bold mb-6">Project Admin</h1>
-      
+
       {!isConnected ? (
-        <button 
+        <button
           onClick={connectWallet}
           className="px-4 py-2 bg-[#2FB574] rounded-md hover:bg-[#238A56] transition-colors"
         >
@@ -169,7 +169,7 @@ const AdminPage = () => {
         <div className="space-y-8">
           <div className="p-6 bg-[#1A3A2C] rounded-xl">
             <h2 className="text-2xl font-semibold mb-4">Create New Project</h2>
-            
+
             <div className="mb-4">
               <label className="block mb-2">Total Amount (ETH)</label>
               <input
@@ -179,21 +179,21 @@ const AdminPage = () => {
                 className="w-full px-3 py-2 bg-[#0D251A] rounded border border-gray-700 focus:border-[#2FB574] focus:outline-none"
               />
             </div>
-            
+
             <h3 className="text-xl font-medium mb-3">Milestones</h3>
-            
+
             {milestones.map((milestone, index) => (
               <div key={index} className="mb-6 p-4 bg-[#0D251A] rounded-lg border border-gray-700">
                 <div className="flex justify-between mb-2">
                   <h4 className="font-medium">Milestone {index + 1}</h4>
-                  <button 
+                  <button
                     onClick={() => removeMilestone(index)}
                     className="text-red-500"
                   >
                     Remove
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-1 text-sm">Title</label>
@@ -204,7 +204,7 @@ const AdminPage = () => {
                       className="w-full px-3 py-2 bg-[#05140D] rounded border border-gray-700 focus:border-[#2FB574] focus:outline-none"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block mb-1 text-sm">Amount Required (ETH)</label>
                     <input
@@ -214,7 +214,7 @@ const AdminPage = () => {
                       className="w-full px-3 py-2 bg-[#05140D] rounded border border-gray-700 focus:border-[#2FB574] focus:outline-none"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block mb-1 text-sm">Recipient Address (leave blank to use your address)</label>
                     <input
@@ -228,7 +228,7 @@ const AdminPage = () => {
                 </div>
               </div>
             ))}
-            
+
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={addMilestone}
@@ -236,7 +236,7 @@ const AdminPage = () => {
               >
                 Add Milestone
               </button>
-              
+
               <button
                 onClick={handleCreateProject}
                 disabled={loading}
@@ -246,10 +246,10 @@ const AdminPage = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="p-6 bg-[#1A3A2C] rounded-xl">
             <h2 className="text-2xl font-semibold mb-4">Check Project Status</h2>
-            
+
             <div className="mb-4">
               <label className="block mb-2">Project ID</label>
               <input
@@ -260,7 +260,7 @@ const AdminPage = () => {
                 min="0"
               />
             </div>
-            
+
             <button
               onClick={handleCheckProject}
               disabled={loading}
@@ -269,17 +269,17 @@ const AdminPage = () => {
               {loading ? 'Checking...' : 'Check Project'}
             </button>
           </div>
-          
+
           {result && (
             <div className={`p-6 ${result.success ? 'bg-[#1A3A2C]' : 'bg-[#3A1A1A]'} rounded-xl`}>
               <h2 className="text-2xl font-semibold mb-4">Result</h2>
               <p className="mb-2">{result.message}</p>
-              
+
               {result.transactionHash && (
                 <div className="mb-4">
                   <p>Transaction Hash:</p>
-                  <a 
-                    href={`${pharosDevnet.blockExplorers.default.url}/tx/${result.transactionHash}`}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${result.transactionHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#2FB574] hover:underline break-all"
@@ -288,7 +288,7 @@ const AdminPage = () => {
                   </a>
                 </div>
               )}
-              
+
               {result.project && (
                 <div className="mt-4">
                   <h3 className="text-xl font-medium mb-2">Project Details</h3>
@@ -299,7 +299,7 @@ const AdminPage = () => {
                   </ul>
                 </div>
               )}
-              
+
               {!result.success && result.error && (
                 <pre className="mt-4 p-4 bg-[#0D1A25] rounded overflow-x-auto text-red-300 text-sm">
                   {JSON.stringify(result.error, null, 2)}

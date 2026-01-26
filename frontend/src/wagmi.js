@@ -2,25 +2,8 @@ import { http, createConfig } from 'wagmi';
 import { sepolia, arbitrum, base, mainnet, optimism, polygon } from 'wagmi/chains';
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 
-// Define Pharos Devnet
-export const pharosDevnet = {
-  id: 50002,
-  name: 'Pharos Devnet',
-  network: 'pharos-devnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Pharos Devnet Token',
-    symbol: 'PHAR',
-  },
-  rpcUrls: {
-    default: { http: ['https://devnet.dplabs-internal.com'] },
-    public: { http: ['https://devnet.dplabs-internal.com'] },
-  },
-  blockExplorers: {
-    default: { name: 'PharoScan', url: 'https://pharosscan.xyz' },
-  },
-  testnet: true,
-};
+// Sepolia is already imported from wagmi/chains at the top
+// We'll use it directly instead of defining pharosDevnet
 
 // Define Pharos Testnet
 export const pharosTestnet = {
@@ -62,7 +45,7 @@ export const pharosMainnet = {
 };
 
 // Setup chains with their RPC providers
-const allChains = [pharosDevnet, pharosTestnet, pharosMainnet, sepolia, mainnet, polygon, optimism, arbitrum, base];
+const allChains = [sepolia, pharosTestnet, pharosMainnet, mainnet, polygon, optimism, arbitrum, base];
 
 // Set up wallet connectors
 const projectId = '7a026d961241ea662d0e403720f0552d';
@@ -76,23 +59,11 @@ const { connectors } = getDefaultWallets({
 // Create the wagmi config
 export const config = createConfig({
   chains: allChains,
-  transports: {
-    ...Object.fromEntries(
-      allChains.filter(chain => chain.id !== pharosDevnet.id).map(chain => [
-        chain.id,
-        http(chain.rpcUrls.default.http[0])
-      ])
-    ),
-    // Custom transport for Pharos Devnet
-    [pharosDevnet.id]: http(pharosDevnet.rpcUrls.default.http[0], {
-      fetchOptions: {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      },
-    }),
-  },
+  transports: Object.fromEntries(
+    allChains.map(chain => [
+      chain.id,
+      http(chain.rpcUrls.default.http[0])
+    ])
+  ),
   connectors,
 });

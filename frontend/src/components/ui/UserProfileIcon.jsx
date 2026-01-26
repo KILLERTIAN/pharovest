@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { User, Settings, LifeBuoy, LogOut, Wallet, Check, ExternalLink } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -16,15 +16,15 @@ import { getExplorerUrl } from "@/utils/blockchainUtils";
 
 const UserProfileIcon = () => {
   const navigate = useNavigate();
-  
+
   // Get wallet context
-  const { 
-    walletAddress, 
-    connectWallet, 
-    disconnectWallet, 
-    isPharosNetwork,
+  const {
+    walletAddress,
+    connectWallet,
+    disconnectWallet,
+    isSupportedNetwork,
     currentChainId,
-    switchToPharosDevnet 
+    switchToSepolia
   } = useContext(WalletContext);
 
   // Generate Jazzicon or avatar URL from wallet address
@@ -36,7 +36,7 @@ const UserProfileIcon = () => {
 
   // Fetch user data from localStorage
   const data = JSON.parse(localStorage.getItem('user')) || {};
-  
+
   // Ensure data.user exists before accessing name
   const username = data?.user?.name || "Guest";
   const baseURL = `${window.location.protocol}//${window.location.host}`;
@@ -58,7 +58,7 @@ const UserProfileIcon = () => {
       localStorage.removeItem('user');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('accessToken');
-      
+
       // Also disconnect wallet if connected
       if (walletAddress) {
         disconnectWallet();
@@ -69,7 +69,7 @@ const UserProfileIcon = () => {
       console.error('Error during logout:', error);
     }
   };
-   
+
   const handleSupportClick = () => {
     navigate("/settings", { state: { scrollTo: "support" } });
   };
@@ -82,7 +82,7 @@ const UserProfileIcon = () => {
   // Get wallet explorer link
   const getWalletExplorerLink = () => {
     if (!walletAddress || !currentChainId) return '#';
-    
+
     // Use the address explorer based on network 
     // We just replace 'tx' with 'address' in our existing explorer URL function
     const txUrl = getExplorerUrl('placeholder');
@@ -121,8 +121,8 @@ const UserProfileIcon = () => {
                 <Wallet className="h-3 w-3" />
                 {formatWalletAddress(walletAddress)}
               </span>
-              {isPharosNetwork && <Check className="h-3 w-3 text-[#2FB574]" />}
-              <a 
+              {isSupportedNetwork && <Check className="h-3 w-3 text-[#2FB574]" />}
+              <a
                 href={getWalletExplorerLink()}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -134,39 +134,35 @@ const UserProfileIcon = () => {
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-600" />
-        
+
         {!walletAddress && (
           <DropdownMenuItem
             onClick={connectWallet}
             className="cursor-pointer flex items-center gap-2 text-white hover:text-[#2FB574] hover:bg-[#0A1F15]"
           >
             <div className="flex items-center gap-2">
-              <img 
-                src="https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png" 
-                alt="Pharos" 
+              <img
+                src="https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png"
+                alt="Pharos"
                 className="h-4 w-4"
               />
               <span>Connect Wallet</span>
             </div>
           </DropdownMenuItem>
         )}
-        
-        {walletAddress && !isPharosNetwork && (
+
+        {walletAddress && !isSupportedNetwork && (
           <DropdownMenuItem
-            onClick={switchToPharosDevnet}
+            onClick={switchToSepolia}
             className="cursor-pointer flex items-center gap-2 text-white hover:text-[#2FB574] hover:bg-[#0A1F15]"
           >
             <div className="flex items-center gap-2">
-              <img 
-                src="https://res.cloudinary.com/djoebsejh/image/upload/v1746277693/Pharos/b4l4e8yqnyde0p4tbs6r.png" 
-                alt="Pharos" 
-                className="h-4 w-4"
-              />
-              <span>Switch to Pharos Network</span>
+              <Wallet className="h-4 w-4" />
+              <span>Switch to Sepolia</span>
             </div>
           </DropdownMenuItem>
         )}
-        
+
         {walletAddress && (
           <DropdownMenuItem
             onClick={disconnectWallet}
@@ -176,9 +172,9 @@ const UserProfileIcon = () => {
             Disconnect Wallet
           </DropdownMenuItem>
         )}
-        
+
         <DropdownMenuSeparator className="border-gray-600" />
-        
+
         <DropdownMenuItem>
           <Link
             to="/settings"

@@ -3,8 +3,8 @@ require("@nomiclabs/hardhat-etherscan");
 require('dotenv').config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0000000000000000000000000000000000000000000000000000000000000000";
-const PHAROS_RPC_URL = process.env.PHAROS_RPC_URL || "https://devnet.dplabs-internal.com";
-const PHAROS_API_KEY = process.env.PHAROS_API_KEY || "";
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "https://eth-sepolia.g.alchemy.com/v2/demo";
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -21,28 +21,16 @@ module.exports = {
     hardhat: {
       allowUnlimitedContractSize: true
     },
-    pharos: {
-      url: PHAROS_RPC_URL,
+    sepolia: {
+      url: SEPOLIA_RPC_URL,
       accounts: [PRIVATE_KEY],
-      chainId: 50002, // Pharos devnet chain ID
+      chainId: 11155111, // Sepolia testnet chain ID
       gas: 2100000,
       gasPrice: 8000000000 // 8 Gwei
     }
   },
   etherscan: {
-    apiKey: {
-      pharos: PHAROS_API_KEY
-    },
-    customChains: [
-      {
-        network: "pharos",
-        chainId: 50002,
-        urls: {
-          apiURL: "https://pharosscan.xyz/api",
-          browserURL: "https://pharosscan.xyz"
-        }
-      }
-    ]
+    apiKey: ETHERSCAN_API_KEY
   },
   paths: {
     sources: "./contracts",

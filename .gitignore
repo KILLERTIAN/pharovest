@@ -1,104 +1,66 @@
-# Dependencies
-/node_modules
-/backend/node_modules
-/frontend/node_modules
-
-# Build outputs
-/build
-/dist
-/frontend/dist
-/frontend/dist-ssr
-/frontend/build
-/backend/build
-/backend/dist
-
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-/backend/.env
-/frontend/.env
-
-# Logs
-logs
-*.log
+# Standard Node.js ignore
+node_modules/
+dist/
+dist-ssr/
+*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Hardhat/Blockchain artifacts and cache
+# Hardhat / Blockchain
+artifacts/
+cache/
+typechain/
+typechain-types/
+coverage/
+coverage.json
+.hardhat/
 /backend/artifacts
-/backend/artifacts/**
 /backend/cache
-/backend/cache/**
-/backend/typechain
 /backend/typechain-types
-/backend/coverage
-/backend/coverage.json
 /backend/ignition/deployments
-.hardhat
-# Local Netlify folder
-.netlify
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea
+# Environment
+.env
+.env.*
+!.env.example
+/backend/.env
+/frontend/.env
+
+# IDE / Operating System
+.vscode/
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.direnv/
+.cache/
 
-# Misc
-.cache
-.local
-*.local
-**/.env.local
-.DS_Store
-.direnv
-*.pem
+# Cloudflare / Vite / NPM specific
+.mf/
+.vite/
+/frontend/.vite/
+/frontend/.npm-cache/
+.npm-cache/
 
-# Debug files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Test files
-coverage/
-.nyc_output/
-
-# Large files
+# Asset Exclusions (Keep only what you want in git)
 *.zip
 *.tar.gz
 *.tgz
-*.mp4
-*.mp3
-*.wav
-*.jpg
-*.jpeg
-*.png
-*.gif
-!/frontend/public/**/*.png
-!/frontend/public/**/*.jpg
-!/frontend/public/**/*.jpeg
-!/frontend/public/**/*.gif
-!/frontend/src/assets/**/*.png
-!/frontend/src/assets/**/*.jpg
-!/frontend/src/assets/**/*.jpeg
-!/frontend/src/assets/**/*.gif
+*.log
 
-# Production build files
-/frontend/.vite
-.vite/
-
-# Temporary files
-.tmp/
-.temp/ 
+# Allow specific useful icons/images but ignore others if needed
+# (Adjust as per your media strategy)
+# !/frontend/src/assets/**/*.png
+# !/frontend/public/**/*.png
+# Extra / Temp scripts
+check-blockchain-project.cjs
+sync-project-11-sepolia.js
+backend/scripts/sync-project-11-sepolia.js
+backend/scripts/*-temp.js
+backend/deployment-*.json

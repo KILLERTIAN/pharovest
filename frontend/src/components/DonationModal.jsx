@@ -13,12 +13,12 @@ import { getContractAddress, getExplorerUrl } from "../utils/blockchainUtils";
 const getUserFriendlyErrorMessage = (error) => {
     const errorMessage = error.message || "Unknown error occurred";
     const errorData = error.data ? error.data.message || "" : "";
-    
+
     // Check for specific error: Project is not active
     if (errorMessage.includes("Project is not active") || errorData.includes("Project is not active")) {
         return "This project is not active on the blockchain. The project may have been created in the database but not properly registered on the blockchain. Please contact the project creator or refresh the page and try again.";
     }
-    
+
     // Parse the hex error message for better error handling
     if (errorMessage.includes("execution reverted") && errorMessage.includes("08c379a0")) {
         // This is a standard Solidity error format
@@ -30,66 +30,66 @@ const getUserFriendlyErrorMessage = (error) => {
                 const hexString = hexData[1];
                 // Convert hex to bytes
                 const bytes = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-                
+
                 // Skip the first 32 bytes (offset) and the next 32 bytes (length)
                 // In a typical Solidity error, the layout is:
                 // 32 bytes: offset to string data
                 // 32 bytes: string length
                 // N bytes: string data
-                
+
                 // Extract the length (at position 32-64)
                 const dataView = new DataView(bytes.buffer);
                 const stringLength = dataView.getUint32(60); // Get last 4 bytes of the 32-64 range
-                
+
                 // Get the string data
                 const stringBytes = bytes.slice(64, 64 + stringLength);
                 const decodedMsg = new TextDecoder().decode(stringBytes);
-                
+
                 if (decodedMsg.includes("Project is not active")) {
                     return "This project is not active on the blockchain. The project may have been created in the database but not properly registered on the blockchain. Please contact the project creator or refresh the page and try again.";
                 }
-                
+
                 return `Contract error: ${decodedMsg}`;
             }
         } catch (parseError) {
             console.error("Error parsing contract error message:", parseError);
         }
     }
-    
+
     // Check for the specific JSON-RPC errors with nested data
     if (error.code === -32603 && errorData.includes("insufficient funds")) {
-        return "Your wallet doesn't have enough funds on the Pharos network. You can get free test tokens from the Pharos faucet.";
+        return "Your wallet doesn't have enough funds on the Sepolia network. You can get free test ETH from Sepolia faucets.";
     }
-    
+
     // Handle common MetaMask/wallet errors
     if (errorMessage.includes("user rejected") || errorMessage.includes("User denied")) {
         return "You declined the transaction in your wallet. You can try again when you're ready.";
     }
-    
+
     if (errorMessage.includes("insufficient funds") || errorData.includes("insufficient funds")) {
-        return "Your wallet doesn't have enough funds on the Pharos network. Visit the Pharos faucet to get free test tokens.";
+        return "Your wallet doesn't have enough funds on the Sepolia network. Visit Sepolia faucets to get free test ETH.";
     }
-    
+
     if (errorMessage.includes("execution reverted")) {
         return "The transaction was rejected by the blockchain. This might be due to contract restrictions or network issues.";
     }
-    
+
     if (errorMessage.includes("nonce")) {
         return "There was a transaction sequence issue. Please refresh the page and try again.";
     }
-    
+
     if (errorMessage.includes("gas")) {
         return "The transaction couldn't be completed due to gas fee issues. You may need to adjust gas settings in your wallet.";
     }
-    
+
     if (errorMessage.includes("network") || errorMessage.includes("connection")) {
         return "Network connection issue detected. Please check your internet connection and wallet network settings.";
     }
-    
+
     if (errorMessage.includes("network") || errorMessage.includes("chain")) {
-        return "Please switch to the Pharos network in your wallet to complete this transaction.";
+        return "Please switch to the Sepolia network in your wallet to complete this transaction.";
     }
-    
+
     // Fallback for other errors
     return "There was an issue with your transaction. Please try again or contact support.";
 };
@@ -102,26 +102,25 @@ class ErrorToastContent extends React.Component {
             isExpanded: false
         };
     }
-    
+
     toggleExpand = () => {
         this.setState(prevState => ({
             isExpanded: !prevState.isExpanded
         }));
     }
-    
+
     render() {
         const { t, errorMessage, technicalDetails } = this.props;
         const { isExpanded } = this.state;
-        
-        const shortTechnicalDetails = technicalDetails.length > 50 
-            ? `${technicalDetails.substring(0, 50)}...` 
+
+        const shortTechnicalDetails = technicalDetails.length > 50
+            ? `${technicalDetails.substring(0, 50)}...`
             : technicalDetails;
-            
+
         return (
-            <div 
-                className={`${
-                    t.visible ? 'animate-enter' : 'animate-leave'
-                } max-w-md w-full bg-[#1A3A2C] border-l-4 border-red-500 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+            <div
+                className={`${t.visible ? 'animate-enter' : 'animate-leave'
+                    } max-w-md w-full bg-[#1A3A2C] border-l-4 border-red-500 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
             >
                 <div className="flex-1 w-0 p-4">
                     <div className="flex items-start">
@@ -135,14 +134,14 @@ class ErrorToastContent extends React.Component {
                             <p className="mt-1 text-sm text-gray-300">
                                 {errorMessage}
                             </p>
-                            
+
                             {technicalDetails && technicalDetails !== errorMessage && (
                                 <div className="mt-1">
                                     <p className="text-xs text-gray-400 mb-1">Technical details:</p>
                                     <p className="text-xs text-gray-400 bg-[#05140D] p-2 rounded">
                                         {isExpanded ? technicalDetails : shortTechnicalDetails}
                                     </p>
-                                    
+
                                     {technicalDetails.length > 50 && (
                                         <button
                                             onClick={this.toggleExpand}
@@ -180,12 +179,12 @@ ErrorToastContent.propTypes = {
 const showErrorToast = (error) => {
     const technicalDetails = error.message || "Unknown error";
     const userFriendlyMessage = getUserFriendlyErrorMessage(error);
-    
+
     toast.custom((t) => (
-        <ErrorToastContent 
-            t={t} 
-            errorMessage={userFriendlyMessage} 
-            technicalDetails={technicalDetails} 
+        <ErrorToastContent
+            t={t}
+            errorMessage={userFriendlyMessage}
+            technicalDetails={technicalDetails}
         />
     ), {
         duration: 8000, // Longer duration for error messages
@@ -200,14 +199,14 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
     const [transactionHash, setTransactionHash] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [userFriendlyError, setUserFriendlyError] = useState("");
-    const { 
-        walletAddress, 
+    const {
+        walletAddress,
         // eslint-disable-next-line no-unused-vars
-        connectWallet, 
-        signer, 
-        isPharosNetwork,
-        isPharosDevnet,
-        switchToPharosDevnet,
+        connectWallet,
+        signer,
+        isSupportedNetwork,
+        isSepolia,
+        switchToSepolia,
         currentChainId,
         // eslint-disable-next-line no-unused-vars
         setSigner
@@ -237,17 +236,17 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
 
     // Check network when modal is opened
     useEffect(() => {
-        if (isOpen && walletAddress && !isPharosNetwork) {
-            toast.error("Please switch to a Pharos network to make a donation", {
+        if (isOpen && walletAddress && !isSupportedNetwork) {
+            toast.error("Please switch to a supported network to make a donation", {
                 icon: <AlertCircle className="h-5 w-5 text-red-500" />,
                 duration: 5000,
                 action: {
-                    label: 'Switch to Devnet',
-                    onClick: () => switchToPharosDevnet()
+                    label: 'Switch to Sepolia',
+                    onClick: () => switchToSepolia()
                 }
             });
         }
-    }, [isOpen, walletAddress, isPharosNetwork, switchToPharosDevnet]);
+    }, [isOpen, walletAddress, isSupportedNetwork, switchToSepolia]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -311,8 +310,8 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
             return;
         }
 
-        if (!isPharosNetwork) {
-            toast.error("Please switch to a Pharos network");
+        if (!isSupportedNetwork) {
+            toast.error("Please switch to a supported network");
             return;
         }
 
@@ -323,45 +322,44 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
             // Create contract instance
             const contractAddress = getContractAddress(currentChainId);
             console.log(`Using contract at address: ${contractAddress} for chain ID: ${currentChainId}`);
-            
+
             const contract = new ethers.Contract(contractAddress, PharovestABI, signer);
-            
+
             // Convert project ID to number if it's a string
             const projectIdNumber = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
-            
+
             // Validate project ID
             if (isNaN(projectIdNumber)) {
                 throw new Error(`Invalid project ID: ${projectId}. Must be a number.`);
             }
-            
+
             console.log(`Donating ${amountETH} ETH to project with ID: ${projectIdNumber} (numeric)`);
-            
+
             // Convert ETH amount to wei
             const amountInWei = ethers.utils.parseEther(amountETH.toString());
-            
+
             // Call the contribute function
             const transaction = await contract.contribute(projectIdNumber, {
                 value: amountInWei
             });
-            
+
             setTransactionHash(transaction.hash);
             setTransactionStatus("confirming");
-            
+
             // Wait for transaction confirmation
             const receipt = await transaction.wait();
-            
+
             if (receipt.status === 1) {
                 console.log("Transaction successful:", receipt);
                 setTransactionStatus("success");
-                
+
                 // Record transaction in database
                 await saveTransactionToBackend(transaction.hash, amountETH, amountUSD);
-                
+
                 // Show success toast
                 toast.custom((t) => (
-                    <div className={`${
-                        t.visible ? 'animate-enter' : 'animate-leave'
-                    } max-w-md w-full bg-[#1A3A2C] border-l-4 border-green-500 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+                    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'
+                        } max-w-md w-full bg-[#1A3A2C] border-l-4 border-green-500 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
                         <div className="flex-1 w-0 p-4">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0 pt-0.5">
@@ -375,9 +373,9 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                                         You&apos;ve successfully contributed {amountETH} ETH to this project.
                                     </p>
                                     <p className="text-sm text-blue-500">
-                                        <a 
-                                            href={getExplorerUrl(transaction.hash)} 
-                                            target="_blank" 
+                                        <a
+                                            href={getExplorerUrl(transaction.hash)}
+                                            target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex items-center gap-1"
                                         >
@@ -422,7 +420,7 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
     const saveTransactionToBackend = async (transactionHash, amountETH, amountUSD) => {
         const maxRetries = 3;
         let retryCount = 0;
-        
+
         const attemptSave = async () => {
             try {
                 const response = await fetch('https://pharovest.onrender.com/transactions', {
@@ -436,38 +434,38 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                         amount: amountETH,
                         usdValue: amountUSD,
                         transactionHash: transactionHash,
-                        network: isPharosDevnet ? "Pharos Devnet" : "Pharos Testnet",
+                        network: isSepolia ? "Sepolia Testnet" : "Sepolia Testnet",
                         timestamp: new Date().toISOString()
                     }),
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log("Transaction saved to backend:", data);
                 return data;
             } catch (error) {
                 console.error("Error saving transaction to backend:", error);
-                
+
                 if (retryCount < maxRetries) {
                     retryCount++;
                     console.log(`Retrying (${retryCount}/${maxRetries})...`);
                     await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
                     return attemptSave();
                 }
-                
+
                 // If we've exhausted retries, just log the error
                 console.error(`Failed to save transaction after ${maxRetries} attempts`);
             }
         };
-        
+
         return attemptSave();
     };
 
     const getStatusMessage = () => {
-        switch(transactionStatus) {
+        switch (transactionStatus) {
             case "processing":
                 return "Preparing transaction...";
             case "confirming":
@@ -487,38 +485,74 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
     };
 
     const renderTransactionStatusContent = () => {
-        switch(transactionStatus) {
+        switch (transactionStatus) {
             case "processing":
                 return (
-                    <div className="flex flex-col items-center justify-center py-10 space-y-6">
-                        <div className="relative h-24 w-24">
-                            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-ping"></div>
-                            <div className="absolute inset-3 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-40 animate-pulse"></div>
-                            <Wallet className="absolute inset-0 h-full w-full text-white m-6" />
+                    <div className="flex flex-col items-center justify-center py-12 space-y-8">
+                        <div className="relative h-28 w-28">
+                            {/* Outer Glow */}
+                            <div className="absolute inset-0 bg-green-500 rounded-full opacity-20 animate-pulse-glow"></div>
+
+                            {/* Floating Wallet Icon */}
+                            <div className="absolute inset-0 flex items-center justify-center animate-float">
+                                <div className="bg-gradient-to-br from-[#2FB574] to-[#1A3A2C] p-6 rounded-2xl shadow-2xl border border-green-500/30">
+                                    <Wallet className="h-10 w-10 text-white" />
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-center text-white text-lg">{getStatusMessage()}</p>
-                        <p className="text-center text-gray-400 text-sm">Please confirm the transaction in your wallet</p>
+                        <div className="space-y-2 text-center">
+                            <p className="text-white text-xl font-bold tracking-tight">{getStatusMessage()}</p>
+                            <p className="text-gray-400 text-sm max-w-[250px] mx-auto leading-relaxed">
+                                Please approve the transaction request in your connected wallet.
+                            </p>
+                        </div>
                     </div>
                 );
             case "confirming":
                 return (
-                    <div className="flex flex-col items-center justify-center py-10 space-y-6">
-                        <div className="relative h-24 w-24">
-                            <div className="absolute inset-0 rounded-full border-4 border-gray-500 border-opacity-20"></div>
-                            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#2FB574] animate-spin"></div>
-                            <Loader2 className="absolute inset-0 h-full w-full text-[#2FB574] m-6 animate-pulse" />
+                    <div className="flex flex-col items-center justify-center py-12 space-y-8">
+                        {/* Orbital Interlaced Animation */}
+                        <div className="relative h-32 w-32 flex items-center justify-center">
+                            {/* Pulsing Background Glow */}
+                            <div className="absolute h-24 w-24 bg-[#2FB574]/10 rounded-full animate-pulse-glow blur-xl"></div>
+
+                            {/* Interactive Orbital Circles */}
+                            <div className="absolute inset-0 border-2 border-green-500/20 rounded-full animate-spin-slow"></div>
+                            <div className="absolute inset-2 border-2 border-green-500/10 rounded-full animate-spin-reverse"></div>
+
+                            {/* The Interlaced Circles (Orbital) */}
+                            <div className="absolute h-12 w-12 border-4 border-[#2FB574] rounded-full animate-orbit shadow-[0_0_15px_rgba(47,181,116,0.5)]"></div>
+                            <div className="absolute h-12 w-12 border-4 border-white/40 rounded-full animate-reverse-orbit"></div>
+
+                            {/* Center Icon */}
+                            <Loader2 className="h-10 w-10 text-[#2FB574] animate-spin" />
                         </div>
-                        <p className="text-center text-white text-lg">{getStatusMessage()}</p>
-                        <div className="flex items-center space-x-2 text-gray-400 text-sm">
-                            <span>Transaction Hash:</span>
-                            <a 
-                                href={getExplorerLink()} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-[#2FB574] hover:underline truncate max-w-[150px]"
-                            >
-                                {transactionHash.slice(0, 6)}...{transactionHash.slice(-4)}
-                            </a>
+
+                        <div className="space-y-4 text-center">
+                            <p className="text-white text-xl font-bold tracking-tight">{getStatusMessage()}</p>
+
+                            <div className="bg-[#05140D] border border-green-500/20 rounded-2xl p-4 space-y-3 shadow-inner">
+                                <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wider text-gray-400 px-1">
+                                    <span>Network Status</span>
+                                    <span className="text-[#2FB574] flex items-center gap-1">
+                                        <div className="h-1.5 w-1.5 bg-[#2FB574] rounded-full animate-pulse"></div>
+                                        Processing
+                                    </span>
+                                </div>
+                                <div className="h-px bg-green-500/10"></div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-500">Tx Hash</span>
+                                    <a
+                                        href={getExplorerLink()}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#2FB574] font-mono hover:text-[#26925e] transition-colors flex items-center gap-2 group"
+                                    >
+                                        {transactionHash.slice(0, 8)}...{transactionHash.slice(-8)}
+                                        <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
@@ -533,25 +567,25 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                         <div className="space-y-3">
                             <p className="text-center text-gray-300">Thank you for supporting this project!</p>
                             <div className="flex items-center justify-center space-x-2">
-                                <a 
+                                <a
                                     href={getExplorerLink()}
-                                    target="_blank" 
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-[#2FB574] hover:underline flex items-center"
                                 >
-                                    View on Pharos Explorer
+                                    View on Sepolia Explorer
                                     <ArrowRight className="h-4 w-4 ml-1" />
                                 </a>
                             </div>
                         </div>
                         <div className="flex gap-3 w-full">
-                            <button 
+                            <button
                                 onClick={resetForm}
                                 className="flex-1 bg-transparent border border-[#2C5440] text-white hover:bg-[#142A20] font-semibold py-3 px-4 rounded-lg transition-colors"
                             >
                                 Make another donation
                             </button>
-                            <button 
+                            <button
                                 onClick={onClose}
                                 className="flex-1 bg-[#2FB574] hover:bg-[#26925e] text-white font-semibold py-3 px-4 rounded-lg transition-colors"
                             >
@@ -573,7 +607,7 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                             <div className="bg-[#05140D] p-3 rounded-lg border border-red-600 text-red-300 text-sm mb-3">
                                 {userFriendlyError || "An unexpected error occurred during the transaction."}
                             </div>
-                            
+
                             {errorMessage && errorMessage !== userFriendlyError && (
                                 <div className="mt-2">
                                     <details className="text-xs text-gray-400">
@@ -586,13 +620,13 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                             )}
                         </div>
                         <div className="flex gap-3 w-full">
-                            <button 
+                            <button
                                 onClick={resetForm}
                                 className="flex-1 bg-transparent border border-[#2C5440] text-white hover:bg-[#142A20] font-semibold py-3 px-4 rounded-lg transition-colors"
                             >
                                 Try again
                             </button>
-                            <button 
+                            <button
                                 onClick={onClose}
                                 className="flex-1 bg-[#2FB574] hover:bg-[#26925e] text-white font-semibold py-3 px-4 rounded-lg transition-colors"
                             >
@@ -616,7 +650,7 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                         Donate to Project
                     </h2>
                     {transactionStatus !== "processing" && transactionStatus !== "confirming" && (
-                        <button 
+                        <button
                             onClick={onClose}
                             className="text-gray-400 hover:text-white transition-colors"
                         >
@@ -632,21 +666,21 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                     ) : (
                         <>
                             <div className="space-y-6">
-                                {/* Pharos Devnet Notice */}
+                                {/* Sepolia Testnet Notice */}
                                 <div className="bg-[#05140D] p-3 rounded-lg border border-blue-600 text-blue-300 text-sm">
-                                    <p className="font-medium mb-1">⚠️ Pharos Devnet Mode</p>
-                                    <p>This app uses the Pharos Devnet for demonstrations. You&apos;ll need Pharos Devnet tokens to make donations.</p>
-                                    <a 
-                                        href="https://pharosscan.xyz/faucet" 
-                                        target="_blank" 
+                                    <p className="font-medium mb-1">⚠️ Sepolia Testnet Mode</p>
+                                    <p>This app uses the Sepolia Testnet for demonstrations. You&apos;ll need Sepolia ETH to make donations.</p>
+                                    <a
+                                        href="https://sepoliafaucet.com"
+                                        target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-[#2FB574] hover:underline flex items-center mt-1 text-xs"
                                     >
-                                        Get free Pharos tokens from faucet
+                                        Get free Sepolia ETH from faucet
                                         <ArrowRight className="h-3 w-3 ml-1" />
                                     </a>
                                 </div>
-                                
+
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-200">
                                         Amount in USD:
@@ -662,50 +696,63 @@ const DonationModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-gray-200">
-                                        Amount in PHAR:
+                                        Amount in Sepolia ETH:
                                     </label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">Ꭾ</span>
+                                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                            <img
+                                                src="https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+                                                alt="ETH"
+                                                className="h-4 w-4"
+                                            />
+                                        </div>
                                         <input
                                             type="number"
                                             value={amountETH}
                                             onChange={handleETHChange}
-                                            className="w-full pl-8 pr-3 py-3 bg-[#05140D] border border-[#2C5440] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2FB574] transition-all"
+                                            className="w-full pl-10 pr-3 py-3 bg-[#05140D] border border-[#2C5440] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2FB574] transition-all"
                                             placeholder="0.000000"
                                         />
                                     </div>
                                 </div>
 
                                 {!walletAddress && (
-                                    <div className="bg-[#05140D] p-3 rounded-lg border border-yellow-600 text-yellow-500 text-sm">
-                                        You&apos;ll need to connect your wallet to make a donation.
+                                    <div className="bg-[#05140D] p-4 rounded-lg border border-yellow-600 space-y-3">
+                                        <p className="text-yellow-500 text-sm">You&apos;ll need to connect your wallet to make a donation.</p>
+                                        <button
+                                            onClick={connectWallet}
+                                            className="w-full bg-[#2FB574] hover:bg-[#26925e] text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Wallet className="h-4 w-4" />
+                                            Connect Wallet
+                                        </button>
                                     </div>
                                 )}
-                                
-                                {walletAddress && !isPharosDevnet && (
+
+                                {walletAddress && !isSepolia && (
                                     <div className="bg-[#05140D] p-3 rounded-lg border border-yellow-600 text-yellow-500 text-sm">
-                                        For best results, please switch to the Pharos Devnet.
-                                        <button 
-                                            onClick={switchToPharosDevnet}
+                                        For best results, please switch to the Sepolia Testnet.
+                                        <button
+                                            onClick={switchToSepolia}
                                             className="block mt-1 text-[#2FB574] hover:underline text-xs"
                                         >
-                                            Switch to Pharos Devnet
+                                            Switch to Sepolia
                                         </button>
                                     </div>
                                 )}
                             </div>
 
                             <div className="flex gap-3 mt-8">
-                                <button 
+                                <button
                                     onClick={handleSubmit}
                                     className="flex-1 bg-[#2FB574] hover:bg-[#26925e] text-white font-semibold py-3 px-4 rounded-lg transition-colors"
                                 >
                                     Donate Now
                                 </button>
-                                <button 
+                                <button
                                     onClick={onClose}
                                     className="flex-1 bg-transparent border border-[#2C5440] text-white hover:bg-[#142A20] font-semibold py-3 px-4 rounded-lg transition-colors"
                                 >

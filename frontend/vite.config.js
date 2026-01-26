@@ -1,18 +1,33 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
 import { cloudflare } from '@cloudflare/vite-plugin'
-
-
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { defineConfig } from "vite"
 
 export default defineConfig({
   plugins: [
     react(),
-    cloudflare()
+    cloudflare(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      protocolImports: true,
+    }),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      },
+    },
+  },
 })
+
