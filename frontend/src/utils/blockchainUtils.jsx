@@ -1,14 +1,11 @@
 import { ethers } from 'ethers';
 import { Contract } from 'ethers';
 import PharovestABI from './PharovestABI.json'; // Import your contract ABI
-import { pharosTestnet, pharosMainnet } from '../wagmi';
 import { sepolia } from 'wagmi/chains';
 
 // Contract addresses for different networks
 const CONTRACT_ADDRESSES = {
   [sepolia.id]: '0x21B050cA33Fb2c5eDD9Dff59A14f999487b262d4', // Sepolia Testnet - DEPLOYED ✅
-  [pharosTestnet.id]: '0x3E754f56fd92db9049febb6521a8C8DB8718Aa3C', // Pharos Testnet
-  [pharosMainnet.id]: '0x3E754f56fd92db9049febb6521a8C8DB8718Aa3C', // Replace with actual mainnet address when deployed
   // Additional networks can be added here
 };
 
@@ -192,52 +189,33 @@ export const isSupportedNetwork = (chainId) => {
 };
 
 // Network Configuration
-export const PHAROS_NETWORKS = {
+export const SUPPORTED_NETWORKS = {
   SEPOLIA: {
     id: sepolia.id,
     name: "Sepolia Testnet",
     icon: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp",
     explorerUrl: "https://sepolia.etherscan.io"
-  },
-  TESTNET: {
-    id: pharosTestnet.id,
-    name: "Sepolia Testnet",
-    icon: "https://docs.pharosnetwork.xyz/~gitbook/image?url=https%3A%2F%2F3467509822-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FKKJs3YcSFbFF0lrqt43f%252Fsites%252Fsite_l4IeK%252Ficon%252FkdvxtoO7c6VTNhdjG8PQ%252Fmark.png%3Falt%3Dmedia%26token%3D5ecfa4fd-78d8-4005-a06c-98df5c01ea50&width=32&dpr=2&quality=100&sign=8eb62a33&sv=2",
-    explorerUrl: pharosTestnet.blockExplorers?.default?.url || "https://explorer.gnosischain.com"
-  },
-  MAINNET: {
-    id: pharosMainnet.id,
-    name: "Ethereum",
-    icon: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp",
-    explorerUrl: "https://etherscan.io"
   }
 };
 
 // Helper function to identify network from ID or name
 export const identifyNetwork = (networkIdOrName) => {
-  if (!networkIdOrName) return PHAROS_NETWORKS.SEPOLIA;
+  if (!networkIdOrName) return SUPPORTED_NETWORKS.SEPOLIA;
 
   // Check if it's a numeric ID
   if (typeof networkIdOrName === 'number' || !isNaN(Number(networkIdOrName))) {
     const networkId = Number(networkIdOrName);
-
-    if (networkId === sepolia.id) return PHAROS_NETWORKS.SEPOLIA;
-    if (networkId === pharosTestnet.id) return PHAROS_NETWORKS.TESTNET;
-    if (networkId === pharosMainnet.id) return PHAROS_NETWORKS.MAINNET;
+    if (networkId === sepolia.id) return SUPPORTED_NETWORKS.SEPOLIA;
   }
 
   // Check if it's a string name
   if (typeof networkIdOrName === 'string') {
     const networkName = networkIdOrName.toLowerCase();
-
-    if (networkName.includes('sepolia')) return PHAROS_NETWORKS.SEPOLIA;
-    if (networkName.includes('test')) return PHAROS_NETWORKS.TESTNET;
-    if (networkName.includes('pharos') && !networkName.includes('sepolia') && !networkName.includes('test'))
-      return PHAROS_NETWORKS.MAINNET;
+    if (networkName.includes('sepolia')) return SUPPORTED_NETWORKS.SEPOLIA;
   }
 
   // Default to Sepolia if not identified
-  return PHAROS_NETWORKS.SEPOLIA;
+  return SUPPORTED_NETWORKS.SEPOLIA;
 };
 
 // Helper function to get explorer URL for transaction based on network

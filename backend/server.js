@@ -105,23 +105,5 @@ const setRandomInterval = (func, min, max) => {
 // Start pinging the service at random intervals between 3 and 8 minutes, with a restricted period from 1:30 AM to 8:00 AM IST
 setRandomInterval(pingService, MIN_INTERVAL, MAX_INTERVAL);
 
-// Proxy for Pharos RPC requests to bypass CORS
-app.post('/api/pharosrpc', async (req, res) => {
-    try {
-        const response = await fetch('https://devnet.dplabs-internal.com/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(req.body),
-        });
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('Error proxying to Pharos RPC:', error);
-        res.status(500).json({ error: 'Failed to proxy request to Pharos RPC' });
-    }
-});
-
 // Start the server
 app.listen(PORT, () => console.log(`Server is running at PORT ${PORT}`));

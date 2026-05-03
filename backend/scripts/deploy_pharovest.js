@@ -1,9 +1,9 @@
-// Script to deploy the Pharovest contract to Pharos testnet
+// Script to deploy the Pharovest contract to Sepolia testnet
 const hre = require('hardhat');
 const { ethers } = require('hardhat');
 
 async function main() {
-  console.log('Deploying Pharovest contract to Pharos testnet...');
+  console.log('Deploying Pharovest contract to Sepolia testnet...');
 
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
@@ -11,7 +11,7 @@ async function main() {
 
   // Display account balance
   const balance = await deployer.provider.getBalance(deployer.address);
-  console.log(`Account balance: ${ethers.formatEther(balance)} PHAR`);
+  console.log(`Account balance: ${ethers.formatEther(balance)} ETH`);
 
   // Deploy the contract
   const pharovestFactory = await ethers.getContractFactory('Pharovest');
@@ -27,8 +27,8 @@ async function main() {
   
   console.log('----------------------------------------------------');
   console.log('Contract deployment completed successfully!');
-  console.log(`To verify the contract on Pharos Explorer, run:`);
-  console.log(`npx hardhat verify --network pharos ${pharovestAddress} ${deployer.address}`);
+  console.log(`To verify the contract on Etherscan, run:`);
+  console.log(`npx hardhat verify --network sepolia ${pharovestAddress} ${deployer.address}`);
 }
 
 main()

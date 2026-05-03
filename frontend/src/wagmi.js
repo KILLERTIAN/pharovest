@@ -5,47 +5,8 @@ import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 // Sepolia is already imported from wagmi/chains at the top
 // We'll use it directly instead of defining pharosDevnet
 
-// Define Pharos Testnet
-export const pharosTestnet = {
-  id: 688688,
-  name: 'Pharos Testnet',
-  network: 'pharos-testnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Pharos Testnet Token',
-    symbol: 'PHAR',
-  },
-  rpcUrls: {
-    default: { http: ['https://testnet.dplabs-internal.com'] },
-    public: { http: ['https://testnet.dplabs-internal.com'] },
-  },
-  blockExplorers: {
-    default: { name: 'BlockScout', url: 'https://pharos-explorer.caldera.xyz' },
-  },
-  testnet: true,
-};
-
-// Define Pharos Mainnet
-export const pharosMainnet = {
-  id: 2730,
-  name: 'Pharos',
-  network: 'pharos',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Pharos',
-    symbol: 'PHAROS',
-  },
-  rpcUrls: {
-    default: { http: ['https://pharos.rpc.caldera.xyz/http'] },
-    public: { http: ['https://pharos.rpc.caldera.xyz/http'] },
-  },
-  blockExplorers: {
-    default: { name: 'BlockScout', url: 'https://pharos-explorer.caldera.xyz' },
-  },
-};
-
 // Setup chains with their RPC providers
-const allChains = [sepolia, pharosTestnet, pharosMainnet, mainnet, polygon, optimism, arbitrum, base];
+const allChains = [sepolia, mainnet, polygon, optimism, arbitrum, base];
 
 // Set up wallet connectors
 const projectId = '7a026d961241ea662d0e403720f0552d';

@@ -3,7 +3,7 @@ import "./Loader.css";
 import "../App.css"
 
 const loadingMessages = [
-    "Connecting to Pharos Network...",
+    "Connecting to Sepolia Network...",
     "Loading blockchain projects...",
     "Fetching latest posts...",
     "Preparing a great experience for you..."
